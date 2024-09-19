@@ -1,11 +1,16 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Velocità di movimento
-    public Rigidbody2D rb;
-    public SpriteRenderer spriteRenderer;
+    public float moveSpeed = 5f;        // Velocità di movimento
+    public float jumpForce = 10f;       // Forza del salto
+    public LayerMask groundLayer;       // Layer che rappresenta il terreno
+    public Transform groundCheck;       // Oggetto che verifica il contatto con il terreno
+    public float groundCheckRadius = 0.2f; // Raggio per controllare se il personaggio è sul terreno
+
+    private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer;
+    private bool isGrounded;  
 
     void Start()
     {
@@ -16,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // TODO: Inserire animazioni
+
         // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)ù
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
         float moveInput = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
@@ -26,28 +32,30 @@ public class PlayerMovement : MonoBehaviour
         // Flip della sprite in base alla direzione
         if (moveInput > 0)
         {
-            spriteRenderer.flipX = true; // Non capovolge la sprite
+            spriteRenderer.flipX = false; // Non capovolge la sprite
         }
         else if (moveInput < 0)
         {
-            spriteRenderer.flipX = false; // Capovolge la sprite
+            spriteRenderer.flipX = true; // Capovolge la sprite
         }
 
-        // Hai premuto spacebar?
+        // Controllo se il personaggio è a terra
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        // Salto
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Aggiunge forza verticale per il salto
+        }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnDrawGizmosSelected()
     {
-        Debug.Log("Enter");
-    }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
-        Debug.Log("Exit");
-    }
-
-    void OnTriggerStay2D(Collider2D other) 
-    {
-        Debug.Log("Stay");
+        if (groundCheck != null)
+        {
+            // Disegna il cerchio per visualizzare il controllo del terreno nell'Editor di Unity
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
     }
 }
