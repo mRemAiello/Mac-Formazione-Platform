@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1002297925297819757}
-  smoothSpeed: 0.125
+  smoothSpeed: 0.3
   offset: {x: 3, y: 0, z: -5}
   negativeOffset: {x: -3, y: 0, z: -5}
 --- !u!1 &619394800
@@ -372,11 +372,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4378537779359580532, guid: a6843eb263537b44481ed378b2794a72, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 18.74
+      value: 15.28
       objectReference: {fileID: 0}
     - target: {fileID: 4378537779359580532, guid: a6843eb263537b44481ed378b2794a72, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.2
+      value: -2.01
       objectReference: {fileID: 0}
     - target: {fileID: 4378537779359580532, guid: a6843eb263537b44481ed378b2794a72, type: 3}
       propertyPath: m_LocalPosition.z
@@ -433,7 +433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5627869434071165730, guid: 52d31ff08132d7a46bdb33b0a1be20be, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.18
       objectReference: {fileID: 0}
     - target: {fileID: 5627869434071165730, guid: 52d31ff08132d7a46bdb33b0a1be20be, type: 3}
       propertyPath: m_LocalPosition.z

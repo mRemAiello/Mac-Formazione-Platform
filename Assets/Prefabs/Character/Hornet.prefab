@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5627869434071165730}
   - component: {fileID: 3320250189704784128}
   - component: {fileID: 1462434421991166620}
-  - component: {fileID: 6542440106837810851}
+  - component: {fileID: 4110773617347505517}
   - component: {fileID: 2595679878168333071}
   m_Layer: 0
   m_Name: Hornet
@@ -103,7 +103,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -111,11 +111,11 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!61 &6542440106837810851
+  m_Interpolate: 1
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
+--- !u!61 &4110773617347505517
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,7 +147,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.12576711, y: 0}
+  m_Offset: {x: -0.049425185, y: -0.058588028}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -158,7 +158,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.5593946, y: 1.56}
+  m_Size: {x: 1.3390361, y: 2.0173194}
   m_EdgeRadius: 0
 --- !u!114 &2595679878168333071
 MonoBehaviour:
@@ -173,7 +173,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 6
-  jumpForce: 10
+  jumpForce: 15
+  doubleJumpForce: 5
+  simpleGravity: 0.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -204,7 +206,7 @@ Transform:
   m_GameObject: {fileID: 7661133869887936920}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.79, z: 0}
+  m_LocalPosition: {x: 0, y: -1.315, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
