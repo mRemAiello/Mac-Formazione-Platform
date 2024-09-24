@@ -175,7 +175,10 @@ MonoBehaviour:
   moveSpeed: 6
   jumpForce: 15
   doubleJumpForce: 5
-  simpleGravity: 0.2
+  gravityScale: 0.5
+  minYVelocity: -10
+  maxYVelocity: 10
+  maxJumps: 2
   groundLayer:
     serializedVersion: 2
     m_Bits: 8

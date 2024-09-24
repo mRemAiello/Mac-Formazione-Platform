@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -5,14 +6,19 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 5f;        // Velocità di movimento
     public float jumpForce = 10f;       // Forza del salto
     public float doubleJumpForce = 5f;
-    public float simpleGravity = 0.2f;
+    public float gravityScale = 9.81f;   // Forza della gravità (personalizzabile)
+    public float minYVelocity = 10;
+    public float maxYVelocity = 10;
+    public int maxJumps = 2;
     public LayerMask groundLayer;       // Layer che rappresenta il terreno
     public Transform groundCheck;       // Oggetto che verifica il contatto con il terreno
     public float groundCheckRadius = 0.2f; // Raggio per controllare se il personaggio è sul terreno
 
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    private bool isGrounded;  
+    private bool isGrounded; 
+    private int jumpCount;
+    private Vector2 velocity;
 
     void Start()
     {
@@ -31,9 +37,6 @@ public class PlayerMovement : MonoBehaviour
         // Movimento del rigidbody impostando la velocità
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
 
-        //
-        Debug.Log("Velocita 1: " + rb.velocity);
-
         // Flip della sprite in base alla direzione
         if (moveInput > 0)
         {
@@ -47,18 +50,42 @@ public class PlayerMovement : MonoBehaviour
         // Controllo se il personaggio è a terra
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Salto
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // Resetta il contatore dei salti se il personaggio è a terra
+        if (isGrounded)
+        {
+            jumpCount = 0; // Resetta il numero di salti
+        }
+
+        // Salto e doppio salto
+        if (Input.GetButtonDown("Jump") && (isGrounded || jumpCount < maxJumps - 1))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Aggiunge forza verticale per il salto
+            jumpCount++; // Incrementa il numero di salti
         }
 
         // Gravità
-        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - simpleGravity);
+        ApplyCustomGravity();
 
-        Debug.Log("Velocita 2: " + rb.velocity);
+        // Limita velocità
+        ClampVelocity2D();
 
-        // Limito la velocità x e y
+        // Debug
+        velocity = rb.velocity;
+    }
+
+    // Metodo per applicare la gravità manualmente
+    private void ApplyCustomGravity()
+    {
+        if (!isGrounded) // Se il personaggio non è a terra, la gravità viene applicata
+        {
+            rb.velocity += new Vector2(0, -gravityScale); // Aggiunge la gravità alla velocità verticale
+        }
+    }
+
+    private void ClampVelocity2D()
+    {
+        float clampedY = Mathf.Clamp(rb.velocity.y, minYVelocity, maxYVelocity);
+        rb.velocity = new Vector2(rb.velocity.x, clampedY);
     }
 
     void OnDrawGizmosSelected()
