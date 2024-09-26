@@ -16,7 +16,7 @@ public class GroundChecker : MonoBehaviour
     //
     public bool isGrounded = false;
 
-    void Update()
+    public void CheckIfIsGrounded()
     {
         // Controllo se il personaggio è a terra
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);

@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Animator animator;
     private GroundChecker groundChecker;
+    private bool isJumping = false;
     private int jumpCount;
     private Vector2 velocity;
     private float moveInput;
@@ -42,11 +43,17 @@ public class PlayerMovement : MonoBehaviour
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
         moveInput = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
     
+        //
+        groundChecker.CheckIfIsGrounded();
+
         // Muovi
         Move();
 
         // Controlla le condizioni di salto
         CheckJump();
+
+        // Ricontrolla le condizioni di salto
+        ResetJump();     
     }
 
     private void LateUpdate()
@@ -88,12 +95,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckJump()
     {
-        // Resetta il contatore dei salti se il personaggio è a terra
-        if (groundChecker.isGrounded)
-        {
-            jumpCount = 0; // Resetta il numero di salti
-        }
-
         // Salto e doppio salto
         if (Input.GetButtonDown("Jump") && (groundChecker.isGrounded || jumpCount < maxJumps - 1))
         {
@@ -106,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
         // Aggiunge forza verticale per il salto
         if (groundChecker.isGrounded)
         {
+            animator.SetBool("IsJumping", true);
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             // TODO: Spawn del fumo, cambio animazione, suono
         }   
@@ -113,12 +115,24 @@ public class PlayerMovement : MonoBehaviour
         // Doppio salto        
         if (!groundChecker.isGrounded && jumpCount < maxJumps - 1)
         {
+            animator.SetBool("IsJumping", true);
             rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
             // TODO: Spawn del fumo, cambio animazione, suono
         }            
 
         // Incrementa il numero di salti
         jumpCount++; 
+    }
+
+    private void ResetJump()
+    {
+        // Resetta il contatore dei salti se il personaggio è a terra
+        if (groundChecker.isGrounded)
+        {
+            animator.SetBool("IsJumping", false);
+            // Resetta il numero di salti
+            jumpCount = 0; 
+        }
     }
 
     // Metodo per applicare la gravità manualmente
