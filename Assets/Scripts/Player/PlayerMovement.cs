@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
     private GroundChecker groundChecker;
     private int jumpCount;
     private Vector2 velocity;
@@ -27,6 +28,9 @@ public class PlayerMovement : MonoBehaviour
 
         // Ottiene il componente SpriteRenderer
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Ottengo animator
+        animator = GetComponent<Animator>();
 
         // Ottengo il component Ground Checker
         groundChecker = GetComponentInChildren<GroundChecker>();
@@ -59,7 +63,8 @@ public class PlayerMovement : MonoBehaviour
         // Debug
         velocity = rb.velocity;
 
-        // TODO: Inserire animazioni
+        //
+        animator.SetFloat("XVelocity", Math.Abs(rb.velocity.x));
     }
 
     private void Flip()
