@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -19,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
     private GroundChecker groundChecker;
     private bool isJumping = false;
     private int jumpCount;
-    private Vector2 velocity;
     private float moveInput;
 
     void Start()
@@ -42,22 +42,16 @@ public class PlayerMovement : MonoBehaviour
         // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
         moveInput = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
-    
-        //
-        groundChecker.CheckIfIsGrounded();
 
         // Muovi
         Move();
-
-        // Controlla le condizioni di salto
-        CheckJump();
-
-        // Ricontrolla le condizioni di salto
-        ResetJump();     
     }
 
     private void LateUpdate()
     {
+        // Controlla le condizioni di salto
+        CheckJump();
+        
         // Gravità
         ApplyCustomGravity();
 
@@ -67,11 +61,14 @@ public class PlayerMovement : MonoBehaviour
         // Flip Sprite
         Flip();
 
-        // Debug
-        velocity = rb.velocity;
-
         //
         animator.SetFloat("XVelocity", Math.Abs(rb.velocity.x));
+
+        //
+        groundChecker.CheckIfIsGrounded();
+
+        // Ricontrolla le condizioni di salto
+        ResetJump();     
     }
 
     private void Flip()
@@ -96,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckJump()
     {
         // Salto e doppio salto
-        if (Input.GetButtonDown("Jump") && (groundChecker.isGrounded || jumpCount < maxJumps - 1))
+        if (Input.GetButtonDown("Jump") && (groundChecker.isGrounded || jumpCount < maxJumps))
         {
             Jump();
         }
@@ -108,20 +105,25 @@ public class PlayerMovement : MonoBehaviour
         if (groundChecker.isGrounded)
         {
             animator.SetBool("IsJumping", true);
+            isJumping = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             // TODO: Spawn del fumo, cambio animazione, suono
-        }   
+
+            // Incrementa il numero di salti
+            jumpCount++; 
+        }
 
         // Doppio salto        
-        if (!groundChecker.isGrounded && jumpCount < maxJumps - 1)
+        if (!groundChecker.isGrounded && jumpCount < maxJumps)
         {
             animator.SetBool("IsJumping", true);
+            isJumping = true;
             rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
             // TODO: Spawn del fumo, cambio animazione, suono
-        }            
 
-        // Incrementa il numero di salti
-        jumpCount++; 
+            // Incrementa il numero di salti
+            jumpCount++; 
+        }
     }
 
     private void ResetJump()
@@ -130,6 +132,7 @@ public class PlayerMovement : MonoBehaviour
         if (groundChecker.isGrounded)
         {
             animator.SetBool("IsJumping", false);
+            isJumping = false;
             // Resetta il numero di salti
             jumpCount = 0; 
         }
