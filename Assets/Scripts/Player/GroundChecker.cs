@@ -22,19 +22,13 @@ public class GroundChecker : MonoBehaviour
     //
     public bool isGrounded = false;
 
-    public void Update()
-    {
-        CheckIfIsGrounded();
-    }
-
-    public void CheckIfIsGrounded()
+    protected void CheckIfIsGrounded()
     {
         // Controllo se il personaggio è a terra in base alla collisione e alla velocità verticale
         bool groundedByCollision = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
-        Debug.Log(Mathf.Abs(rb.velocity.y));
-        if (groundedByCollision && Mathf.Abs(rb.velocity.y) < velocityThreshold)
+        if (groundedByCollision && Mathf.Abs(rb.velocity.y) <= velocityThreshold)
         {
             isGrounded = true;
         }

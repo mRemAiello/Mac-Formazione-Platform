@@ -2,40 +2,27 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : GroundChecker
 {
-    public float moveSpeed = 5f;        // Velocità di movimento
-    public float jumpForce = 10f;       // Forza del salto
+    public float moveSpeed = 5f;
+    public float jumpForce = 10f;
     public float doubleJumpForce = 5f;
-    public float gravityScale = 9.81f;   // Forza della gravità (personalizzabile)
+    public float gravityScale = 9.81f;
     public float minXVelocity = 10;
     public float maxXVelocity = 10;
     public float minYVelocity = 10;
     public float maxYVelocity = 10;
     public int maxJumps = 2;
 
-    private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
-    private Animator animator;
-    private GroundChecker groundChecker;
+    //
+    public SpriteRenderer spriteRenderer;
+    public Animator animator;
     private bool isJumping = false;
     private int jumpCount;
     private float moveInput;
-
-    void Start()
-    {
-        // Ottiene il componente Rigidbody2D
-        rb = GetComponent<Rigidbody2D>();
-
-        // Ottiene il componente SpriteRenderer
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        // Ottengo animator
-        animator = GetComponent<Animator>();
-
-        // Ottengo il component Ground Checker
-        groundChecker = GetComponentInChildren<GroundChecker>();
-    }
+    private bool isSlowed = false;
+    private float slowJumpSpeed = 1;
+    private float slowSpeed = 1;
 
     void Update()
     {
@@ -62,13 +49,13 @@ public class PlayerMovement : MonoBehaviour
         Flip();
 
         //
-        animator.SetFloat("XVelocity", Math.Abs(rb.velocity.x));
-
-        //
-        groundChecker.CheckIfIsGrounded();
+        CheckIfIsGrounded();
 
         // Ricontrolla le condizioni di salto
-        ResetJump();     
+        ResetJump();
+
+        // Funzione che aggiorna l'animator
+        UpdateAnimator();
     }
 
     private void Flip()
@@ -87,51 +74,42 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         // Movimento del rigidbody impostando la velocità
-        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(moveInput * moveSpeed * slowSpeed, rb.velocity.y);
     }
 
     private void CheckJump()
     {
-        // Salto e doppio salto
-        if (Input.GetButtonDown("Jump") && (groundChecker.isGrounded || jumpCount < maxJumps))
+        if (Input.GetButtonDown("Jump"))
         {
-            Jump();
-        }
-    }
+            if (isGrounded)
+            {
+                isJumping = true;
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce * slowJumpSpeed);
 
-    private void Jump()
-    {
-        // Aggiunge forza verticale per il salto
-        if (groundChecker.isGrounded)
-        {
-            animator.SetBool("IsJumping", true);
-            isJumping = true;
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            // TODO: Spawn del fumo, cambio animazione, suono
+                // Incrementa il numero di salti
+                jumpCount++;
 
-            // Incrementa il numero di salti
-            jumpCount++; 
-        }
+                // TODO: Spawn del fumo, cambio animazione, suono
+            }
+            // Doppio salto        
+            else if (!isGrounded && jumpCount < maxJumps)
+            {
+                isJumping = true;
+                rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
 
-        // Doppio salto        
-        if (!groundChecker.isGrounded && jumpCount < maxJumps)
-        {
-            animator.SetBool("IsJumping", true);
-            isJumping = true;
-            rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
-            // TODO: Spawn del fumo, cambio animazione, suono
+                // Incrementa il numero di salti
+                jumpCount++; 
 
-            // Incrementa il numero di salti
-            jumpCount++; 
+                // TODO: Spawn del fumo, cambio animazione, suono
+            }
         }
     }
 
     private void ResetJump()
     {
         // Resetta il contatore dei salti se il personaggio è a terra
-        if (groundChecker.isGrounded)
+        if (isGrounded)
         {
-            animator.SetBool("IsJumping", false);
             isJumping = false;
             // Resetta il numero di salti
             jumpCount = 0; 
@@ -142,11 +120,19 @@ public class PlayerMovement : MonoBehaviour
     private void ApplyCustomGravity()
     {
         // Se il personaggio non è a terra, la gravità viene applicata
-        if (!groundChecker.isGrounded) 
+        if (!isGrounded) 
         {
             // Aggiunge la gravità alla velocità verticale
             rb.velocity += new Vector2(0, -gravityScale);
         }
+    }
+
+    private void UpdateAnimator()
+    {
+        //
+        animator.SetFloat("XVelocity", Math.Abs(rb.velocity.x));
+        animator.SetBool("IsJumping", isJumping);
+        animator.SetBool("IsSlowed", isSlowed);
     }
 
     private void ClampVelocity2D()
@@ -154,5 +140,19 @@ public class PlayerMovement : MonoBehaviour
         float clampedX = Mathf.Clamp(rb.velocity.x, minXVelocity, maxXVelocity);
         float clampedY = Mathf.Clamp(rb.velocity.y, minYVelocity, maxYVelocity);
         rb.velocity = new Vector2(clampedX, clampedY);
+    }
+
+    public void Slow(float slowSpeed, float slowJumpSpeed)
+    {
+        this.slowSpeed = slowSpeed;
+        this.slowJumpSpeed = slowJumpSpeed;
+        isSlowed = true;
+    }
+
+    public void RemoveSlow()
+    {
+        slowSpeed = 1;
+        slowJumpSpeed = 1;
+        isSlowed = false;
     }
 }

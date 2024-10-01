@@ -2,15 +2,38 @@ using UnityEngine;
 
 public class PlayerLife : MonoBehaviour
 {
-    public int currentHP;
-    public int maxHP;
+    public float currentHP;
+    public float maxHP;
+    public float damagePerSecond = 0;
+    public float seconds = 0;
 
     void Start()
     {
         currentHP = maxHP;
     }
 
-    public void TakeDamage(int damage)
+    void Update()
+    {
+        if (seconds > 0)
+        {
+            TakeDamage(damagePerSecond * Time.deltaTime);
+            seconds -= Time.deltaTime;
+        }
+    }
+
+    public void AddDamagePerSecond(float damage, float seconds)
+    {
+        damagePerSecond = damage;
+        this.seconds = seconds;
+    }
+
+    public void RemoveDamagePerSecond()
+    {
+        damagePerSecond = 0;
+        seconds = 0;
+    }
+
+    public void TakeDamage(float damage)
     {
         currentHP -= damage;
         if (currentHP <= 0)
