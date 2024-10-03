@@ -4,31 +4,30 @@ using UnityEngine;
 
 public class PlayerMovement : GroundChecker
 {
-    public float moveSpeed = 5f;
-    public float jumpForce = 10f;
-    public float doubleJumpForce = 5f;
-    public float gravityScale = 9.81f;
-    public float minXVelocity = 10;
-    public float maxXVelocity = 10;
-    public float minYVelocity = 10;
-    public float maxYVelocity = 10;
-    public int maxJumps = 2;
-
+    [SerializeField] private PlayerMovementData _playerMovementData;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Animator _animator;
+    
     //
-    public SpriteRenderer spriteRenderer;
-    public Animator animator;
-    private bool isJumping = false;
-    private int jumpCount;
-    private float moveInput;
-    private bool isSlowed = false;
-    private float slowJumpSpeed = 1;
-    private float slowSpeed = 1;
+    private bool _isJumping = false;
+    private float _standardGravityScale;
+    private int _jumpCount;
+    private float _jumpTime;
+    private float _moveInput;
+    private bool _isSlowed = false;
+    private float _slowJumpSpeed = 1;
+    private float _slowSpeed = 1;
+
+    void Start()
+    {
+        _standardGravityScale = rb.gravityScale;
+    }
 
     void Update()
     {
         // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
-        moveInput = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
+        _moveInput = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
 
         // Muovi
         Move();
@@ -61,98 +60,110 @@ public class PlayerMovement : GroundChecker
     private void Flip()
     {
         // Flip della sprite in base alla direzione
-        if (moveInput > 0)
+        if (_moveInput > 0)
         {
-            spriteRenderer.flipX = false; // Non capovolge la sprite
+            _spriteRenderer.flipX = false; // Non capovolge la sprite
         }
-        else if (moveInput < 0)
+        else if (_moveInput < 0)
         {
-            spriteRenderer.flipX = true; // Capovolge la sprite
+            _spriteRenderer.flipX = true; // Capovolge la sprite
         }
     }
 
     private void Move()
     {
         // Movimento del rigidbody impostando la velocità
-        rb.velocity = new Vector2(moveInput * moveSpeed * slowSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(_moveInput * _playerMovementData.MoveSpeed * _slowSpeed, rb.velocity.y);
     }
 
     private void CheckJump()
     {
+        //
         if (Input.GetButtonDown("Jump"))
         {
-            if (isGrounded)
+            if (IsGrounded)
             {
-                isJumping = true;
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce * slowJumpSpeed);
+                _isJumping = true;
+                rb.velocity = new Vector2(rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
 
                 // Incrementa il numero di salti
-                jumpCount++;
+                _jumpCount++;
 
                 // TODO: Spawn del fumo, cambio animazione, suono
             }
             // Doppio salto        
-            else if (!isGrounded && jumpCount < maxJumps)
+            else if (!IsGrounded && _jumpCount < _playerMovementData.MaxJumps)
             {
-                isJumping = true;
-                rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
+                _isJumping = true;
+                rb.velocity = new Vector2(rb.velocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
 
                 // Incrementa il numero di salti
-                jumpCount++; 
+                _jumpCount++;
+                _jumpTime = 0;
 
                 // TODO: Spawn del fumo, cambio animazione, suono
             }
+        }
+
+        //
+        if (_isJumping)
+        {
+            _jumpTime += Time.deltaTime;
         }
     }
 
     private void ResetJump()
     {
         // Resetta il contatore dei salti se il personaggio è a terra
-        if (isGrounded)
+        if (IsGrounded)
         {
-            isJumping = false;
+            _isJumping = false;
             // Resetta il numero di salti
-            jumpCount = 0; 
+            _jumpCount = 0;
+            _jumpTime = 0;
         }
     }
 
     // Metodo per applicare la gravità manualmente
     private void ApplyCustomGravity()
     {
-        // Se il personaggio non è a terra, la gravità viene applicata
-        if (!isGrounded) 
+        // Aumento la gravità dopo un tot secondi di salto
+        if (_isJumping && _jumpTime >= _playerMovementData.JumpDelay) 
         {
-            // Aggiunge la gravità alla velocità verticale
-            rb.velocity += new Vector2(0, -gravityScale);
+            rb.gravityScale *= _playerMovementData.GravityScale;
+        }
+        else
+        {
+            rb.gravityScale = _standardGravityScale;
         }
     }
 
     private void UpdateAnimator()
     {
         //
-        animator.SetFloat("XVelocity", Math.Abs(rb.velocity.x));
-        animator.SetBool("IsJumping", isJumping);
-        animator.SetBool("IsSlowed", isSlowed);
+        _animator.SetFloat("XVelocity", Math.Abs(rb.velocity.x));
+        _animator.SetBool("IsJumping", _isJumping);
+        _animator.SetBool("IsSlowed", _isSlowed);
     }
 
     private void ClampVelocity2D()
     {
-        float clampedX = Mathf.Clamp(rb.velocity.x, minXVelocity, maxXVelocity);
-        float clampedY = Mathf.Clamp(rb.velocity.y, minYVelocity, maxYVelocity);
+        float clampedX = Mathf.Clamp(rb.velocity.x, _playerMovementData.MinXVelocity, _playerMovementData.MaxXVelocity);
+        float clampedY = Mathf.Clamp(rb.velocity.y, _playerMovementData.MinYVelocity, _playerMovementData.MaxYVelocity);
         rb.velocity = new Vector2(clampedX, clampedY);
     }
 
     public void Slow(float slowSpeed, float slowJumpSpeed)
     {
-        this.slowSpeed = slowSpeed;
-        this.slowJumpSpeed = slowJumpSpeed;
-        isSlowed = true;
+        _slowSpeed = slowSpeed;
+        _slowJumpSpeed = slowJumpSpeed;
+        _isSlowed = true;
     }
 
     public void RemoveSlow()
     {
-        slowSpeed = 1;
-        slowJumpSpeed = 1;
-        isSlowed = false;
+        _slowSpeed = 1;
+        _slowJumpSpeed = 1;
+        _isSlowed = false;
     }
 }
