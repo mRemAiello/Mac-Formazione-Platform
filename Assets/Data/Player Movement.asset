@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: Player Movement
   m_EditorClassIdentifier: 
   _moveSpeed: 12
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 72
+  _groundCheckRadius: 0.2
+  _velocityThreshold: 0.1
+  _platformDistanceLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  _platformDistanceToCheck: 2.5
   _jumpForce: 10
   _doubleJumpForce: 13
   _jumpDelay: 0.25

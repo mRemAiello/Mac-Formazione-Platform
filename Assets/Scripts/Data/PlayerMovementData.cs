@@ -8,6 +8,20 @@ public class PlayerMovementData : ScriptableObject
     [Header("Speed")]
     [SerializeField, Range(1, 99)] private float _moveSpeed = 5f;
 
+    [Header("Ground")]
+    // Layer che rappresenta il terreno
+    [SerializeField] private LayerMask _groundLayer;
+
+    // Raggio per controllare se il personaggio è sul terreno
+    [SerializeField] private float _groundCheckRadius = 0.2f;
+
+    // Soglia per considerare il personaggio in aria in base alla velocità verticale
+    [SerializeField] private float _velocityThreshold = 0.1f;
+
+    [Header("Platform Down Check")]
+    [SerializeField] private LayerMask _platformDistanceLayerMask;
+    [SerializeField] private float _platformDistanceToCheck;
+
     [Header("Jump")]
     [SerializeField] private float _jumpForce = 10f;
     [SerializeField] private float _doubleJumpForce = 5f;
@@ -25,6 +39,11 @@ public class PlayerMovementData : ScriptableObject
 
     // Property
     public float MoveSpeed => _moveSpeed;
+    public LayerMask GroundLayer => _groundLayer;
+    public float GroundCheckRadius => _groundCheckRadius;
+    public float VelocityThreshold => _velocityThreshold;
+    public LayerMask PlatformDistanceLayerMask => _platformDistanceLayerMask;
+    public float PlatformDistanceToCheck => _platformDistanceToCheck;
     public float JumpForce => _jumpForce;
     public float DoubleJumpForce => _doubleJumpForce;
     public float JumpDelay => _jumpDelay;

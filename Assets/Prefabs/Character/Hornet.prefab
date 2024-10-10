@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerLife: {fileID: 6346444647449418098}
-  _groundChecker: {fileID: 4462464691430308749}
+  _playerMovement: {fileID: 4462464691430308749}
   _fallThreshold: 40
   _damage: 10
   _damageMultiplier: 1.2
@@ -93,16 +93,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eff039933d3009145a96331d7b589915, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 1462434421991166620}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 72
-  _groundCheck: {fileID: 2851443266975678397}
-  _groundCheckRadius: 0.2
-  _velocityThreshold: 0.2
   _playerMovementData: {fileID: 11400000, guid: cb8a0fd49583f4b48b3c8d84385ef3ea, type: 2}
+  _rb: {fileID: 1462434421991166620}
   _spriteRenderer: {fileID: 3320250189704784128}
   _animator: {fileID: 2700560524879110879}
+  _groundCheck: {fileID: 2851443266975678397}
 --- !u!1 &4803677909250019478
 GameObject:
   m_ObjectHideFlags: 0
