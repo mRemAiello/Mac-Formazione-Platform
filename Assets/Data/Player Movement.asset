@@ -16,9 +16,9 @@ MonoBehaviour:
   _jumpForce: 10
   _doubleJumpForce: 13
   _jumpDelay: 0.25
+  _maxJumps: 2
   _gravityScale: 1.05
   _minXVelocity: -10
   _maxXVelocity: 10
   _minYVelocity: -20
   _maxYVelocity: 20
-  _maxJumps: 2
