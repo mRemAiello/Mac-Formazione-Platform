@@ -1,5 +1,6 @@
 using System;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -13,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Oggetto che verifica il contatto con il terreno    
     [SerializeField] private Transform _groundCheck;
-  
+
     //
     private bool _isJumping = false;
     private float _standardGravityScale;
@@ -24,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
     private bool _isSlowed = false;
     private float _slowJumpSpeed = 1;
     private float _slowSpeed = 1;
+    private float _coyoteTimeCounter = 0;
+    private float _jumpBufferCounter = 0;
 
     void Start()
     {
@@ -45,7 +48,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Controlla le condizioni di salto
         CheckJump();
-        
+
         // Gravità
         ApplyCustomGravity();
 
@@ -54,9 +57,6 @@ public class PlayerMovement : MonoBehaviour
 
         // Flip Sprite
         Flip();
-
-        //
-        IsGrounded();
 
         // Ricontrolla le condizioni di salto
         ResetJump();
@@ -86,15 +86,16 @@ public class PlayerMovement : MonoBehaviour
         // Controllo se il personaggio è a terra in base alla collisione e alla velocità verticale
         bool groundedByCollision = Physics2D.OverlapCircle(_groundCheck.position, _playerMovementData.GroundCheckRadius, _playerMovementData.GroundLayer);
 
+        //
+        // Debug.Log(groundedByCollision + " - " + Mathf.Abs(_rb.velocity.y));
+
         // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
         if (groundedByCollision && Mathf.Abs(_rb.velocity.y) <= _playerMovementData.VelocityThreshold)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     private void Move()
@@ -109,31 +110,59 @@ public class PlayerMovement : MonoBehaviour
         if (_moveInputVertical < 0)
             return;
 
-        //
+        // Coyote Time
+        if (IsGrounded())
+        {
+            _coyoteTimeCounter = _playerMovementData.CoyoteTime;
+        }
+        else
+        {
+            _coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        // Jump Buffering
         if (Input.GetButtonDown("Jump"))
         {
-            if (IsGrounded())
-            {
-                _isJumping = true;
-                _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
+            _jumpBufferCounter = _playerMovementData.JumpBufferTime;
+        }
+        else
+        {
+            _jumpBufferCounter -= Time.deltaTime;
+        }
 
-                // Incrementa il numero di salti
-                _jumpCount++;
+        //
+        if (_coyoteTimeCounter > 0 && _jumpBufferCounter > 0)
+        {
+            _isJumping = true;
+            _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
 
-                // TODO: Spawn del fumo, cambio animazione, suono
-            }
-            // Doppio salto        
-            else if (!IsGrounded() && _jumpCount < _playerMovementData.MaxJumps)
-            {
-                _isJumping = true;
-                _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
+            // Incrementa il numero di salti
+            _jumpCount++;
 
-                // Incrementa il numero di salti
-                _jumpCount++;
-                _jumpTime = 0;
+            // 
+            _jumpBufferCounter = 0;
 
-                // TODO: Spawn del fumo, cambio animazione, suono
-            }
+            // TODO: Spawn del fumo, cambio animazione, suono
+        }
+
+        // Coyote Time
+        if (Input.GetButtonUp("Jump") && _rb.velocity.y > 0f)
+        {
+            _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed * 0.5f);
+            _coyoteTimeCounter = 0;
+        }
+
+        // Doppio salto        
+        if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerMovementData.MaxJumps)
+        {
+            _isJumping = true;
+            _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
+
+            // Incrementa il numero di salti
+            _jumpCount++;
+            _jumpTime = 0;
+
+            // TODO: Spawn del fumo, cambio animazione, suono
         }
 
         //
@@ -159,7 +188,7 @@ public class PlayerMovement : MonoBehaviour
     private void ApplyCustomGravity()
     {
         // Aumento la gravità dopo un tot secondi di salto
-        if (_isJumping && _jumpTime >= _playerMovementData.JumpDelay) 
+        if (_isJumping && _jumpTime >= _playerMovementData.JumpDelay)
         {
             _rb.gravityScale *= _playerMovementData.GravityScale;
         }

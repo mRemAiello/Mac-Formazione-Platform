@@ -26,6 +26,8 @@ public class PlayerMovementData : ScriptableObject
     [SerializeField] private float _jumpForce = 10f;
     [SerializeField] private float _doubleJumpForce = 5f;
     [SerializeField] private float _jumpDelay = 0.1f;
+    [SerializeField] private float _coyoteTime = 0.2f;
+    [SerializeField] private float _jumpBufferTime;
     [SerializeField] private int _maxJumps = 2;
 
     [Header("Gravity")]
@@ -46,6 +48,8 @@ public class PlayerMovementData : ScriptableObject
     public float PlatformDistanceToCheck => _platformDistanceToCheck;
     public float JumpForce => _jumpForce;
     public float DoubleJumpForce => _doubleJumpForce;
+    public float CoyoteTime => _coyoteTime;
+    public float JumpBufferTime => _jumpBufferTime;
     public float JumpDelay => _jumpDelay;
     public float GravityScale => _gravityScale;
     public float MinXVelocity => _minXVelocity;
