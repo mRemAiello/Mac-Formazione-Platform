@@ -15,7 +15,7 @@ public class PlayerFallDamage : MonoBehaviour
     private void LateUpdate()
     {
         //
-        if (_playerMovement.IsGrounded && _isFalling)
+        if (_playerMovement.IsGrounded() && _isFalling)
         {
             _lastY = _firstY - transform.position.y;
              Debug.Log("Last Y: " + _lastY);
@@ -32,7 +32,7 @@ public class PlayerFallDamage : MonoBehaviour
         }
 
         // Controllare Is Grounded
-        if (!_playerMovement.IsGrounded && !_isFalling)
+        if (!_playerMovement.IsGrounded() && !_isFalling)
         {
             _firstY = transform.position.y;
             Debug.Log("First Y: " + _firstY);

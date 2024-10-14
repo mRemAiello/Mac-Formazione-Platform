@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // TODO: Implementare Coyote Time e Buffering
-    // https://www.youtube.com/watch?v=RFix_Kg2Di0&list=LL&index=2
-
     [SerializeField] private PlayerMovementData _playerMovementData;
 
     [Space]
@@ -16,13 +13,9 @@ public class PlayerMovement : MonoBehaviour
 
     // Oggetto che verifica il contatto con il terreno    
     [SerializeField] private Transform _groundCheck;
-
-    //
-    public bool IsGrounded => _isGrounded;
-    
+  
     //
     private bool _isJumping = false;
-    private bool _isGrounded = false;
     private float _standardGravityScale;
     private int _jumpCount;
     private float _jumpTime;
@@ -63,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
         Flip();
 
         //
-        CheckIfIsGrounded();
+        IsGrounded();
 
         // Ricontrolla le condizioni di salto
         ResetJump();
@@ -88,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void CheckIfIsGrounded()
+    public bool IsGrounded()
     {
         // Controllo se il personaggio è a terra in base alla collisione e alla velocità verticale
         bool groundedByCollision = Physics2D.OverlapCircle(_groundCheck.position, _playerMovementData.GroundCheckRadius, _playerMovementData.GroundLayer);
@@ -96,11 +89,11 @@ public class PlayerMovement : MonoBehaviour
         // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
         if (groundedByCollision && Mathf.Abs(_rb.velocity.y) <= _playerMovementData.VelocityThreshold)
         {
-            _isGrounded = true;
+            return true;
         }
         else
         {
-            _isGrounded = false;
+            return false;
         }
     }
 
@@ -119,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
         //
         if (Input.GetButtonDown("Jump"))
         {
-            if (_isGrounded)
+            if (IsGrounded())
             {
                 _isJumping = true;
                 _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
@@ -130,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
                 // TODO: Spawn del fumo, cambio animazione, suono
             }
             // Doppio salto        
-            else if (!_isGrounded && _jumpCount < _playerMovementData.MaxJumps)
+            else if (!IsGrounded() && _jumpCount < _playerMovementData.MaxJumps)
             {
                 _isJumping = true;
                 _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
@@ -153,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
     private void ResetJump()
     {
         // Resetta il contatore dei salti se il personaggio è a terra
-        if (_isGrounded)
+        if (IsGrounded())
         {
             _isJumping = false;
             // Resetta il numero di salti
@@ -179,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
     // Controllo se ho premuto il tasto Giù + barra spaziatrice
     private void CheckDownButtonPressed()
     {
-        if (_isGrounded && Input.GetButtonDown("Jump") && _moveInputVertical < 0)
+        if (IsGrounded() && Input.GetButtonDown("Jump") && _moveInputVertical < 0)
         {
             Vector2 pos = transform.position;
             var distance = _playerMovementData.PlatformDistanceToCheck;
