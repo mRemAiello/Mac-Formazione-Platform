@@ -12,7 +12,7 @@ public class Mud : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerScript = other.gameObject.GetComponent<PlayerMovement>();
+            var playerScript = other.gameObject.GetComponentInChildren<PlayerMovement>();
             if (playerScript != null)
             {
                 playerScript.Slow(slowVelocity, slowJumpSpeed);
@@ -24,7 +24,7 @@ public class Mud : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerScript = other.gameObject.GetComponent<PlayerMovement>();
+            var playerScript = other.gameObject.GetComponentInChildren<PlayerMovement>();
             if (playerScript != null)
             {
                 playerScript.RemoveSlow();
@@ -36,7 +36,7 @@ public class Mud : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerScript = other.gameObject.GetComponent<PlayerMovement>();
+            var playerScript = other.gameObject.GetComponentInChildren<PlayerMovement>();
             if (playerScript != null)
             {
                 playerScript.Slow(slowVelocity, slowJumpSpeed);

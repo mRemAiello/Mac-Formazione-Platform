@@ -133,6 +133,7 @@ public class PlayerMovement : MonoBehaviour
         //
         if (_coyoteTimeCounter > 0 && _jumpBufferCounter > 0)
         {
+            //Debug.Log("Primo salto");
             _isJumping = true;
             _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
 
@@ -144,17 +145,10 @@ public class PlayerMovement : MonoBehaviour
 
             // TODO: Spawn del fumo, cambio animazione, suono
         }
-
-        // Coyote Time
-        if (Input.GetButtonUp("Jump") && _rb.velocity.y > 0f)
+        // Doppio salto
+        else if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerMovementData.MaxJumps)
         {
-            _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed * 0.5f);
-            _coyoteTimeCounter = 0;
-        }
-
-        // Doppio salto        
-        if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerMovementData.MaxJumps)
-        {
+            //Debug.Log("Doppio salto");
             _isJumping = true;
             _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
 
@@ -163,6 +157,14 @@ public class PlayerMovement : MonoBehaviour
             _jumpTime = 0;
 
             // TODO: Spawn del fumo, cambio animazione, suono
+        }
+
+        // Coyote Time
+        if (Input.GetButtonUp("Jump") && _rb.velocity.y > 0f && _jumpCount <= 1)
+        {
+            //Debug.Log("Coyote Time" + _jumpCount);
+            _rb.velocity = new Vector2(_rb.velocity.x, _rb.velocity.y * 0.5f);
+            _coyoteTimeCounter = 0;
         }
 
         //
