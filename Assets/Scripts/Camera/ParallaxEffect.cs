@@ -46,9 +46,9 @@ public class ParallaxEffect : MonoBehaviour
         }
 
         // Scrolling infinito su Y
-        if (Mathf.Abs(cameraTransform.position.y - transform.position.y) >= _textureUnitSizeX)
+        if (Mathf.Abs(cameraTransform.position.y - transform.position.y) >= _textureUnitSizeY)
         {
-            float offsetPositionY = (cameraTransform.position.y - transform.position.y) % _textureUnitSizeX;
+            float offsetPositionY = (cameraTransform.position.y - transform.position.y) % _textureUnitSizeY;
             transform.position = new Vector3(transform.position.x, cameraTransform.position.y + offsetPositionY);
         }
     }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerLife : MonoBehaviour
 {
@@ -6,10 +7,12 @@ public class PlayerLife : MonoBehaviour
     public float maxHP;
     public float damagePerSecond = 0;
     public float seconds = 0;
+    public Slider hpSlider;
 
     void Start()
     {
         currentHP = maxHP;
+        hpSlider.maxValue = maxHP;
     }
 
     void Update()
@@ -19,6 +22,11 @@ public class PlayerLife : MonoBehaviour
             TakeDamage(damagePerSecond * Time.deltaTime);
             seconds -= Time.deltaTime;
         }
+    }
+
+    void LateUpdate()
+    {
+        hpSlider.value = currentHP;
     }
 
     public void AddDamagePerSecond(float damage, float seconds)

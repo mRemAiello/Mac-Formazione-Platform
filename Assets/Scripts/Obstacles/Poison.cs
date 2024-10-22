@@ -14,8 +14,8 @@ public class Poison : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerMovement = other.gameObject.GetComponent<PlayerMovement>();
-            var playerLife = other.gameObject.GetComponent<PlayerLife>();
+            var playerMovement = other.gameObject.GetComponentInChildren<PlayerMovement>();
+            var playerLife = other.gameObject.GetComponentInChildren<PlayerLife>();
             if (playerMovement != null && playerLife != null)
             {
                 playerLife.RemoveDamagePerSecond();
@@ -28,8 +28,8 @@ public class Poison : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerMovement = other.gameObject.GetComponent<PlayerMovement>();
-            var playerLife = other.gameObject.GetComponent<PlayerLife>();
+            var playerMovement = other.gameObject.GetComponentInChildren<PlayerMovement>();
+            var playerLife = other.gameObject.GetComponentInChildren<PlayerLife>();
             if (playerMovement != null && playerLife != null)
             {
                 playerMovement.RemoveSlow();
@@ -42,8 +42,8 @@ public class Poison : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerMovement = other.gameObject.GetComponent<PlayerMovement>();
-            var playerLife = other.gameObject.GetComponent<PlayerLife>();
+            var playerMovement = other.gameObject.GetComponentInChildren<PlayerMovement>();
+            var playerLife = other.gameObject.GetComponentInChildren<PlayerLife>();
             if (playerMovement != null && playerLife != null)
             {
                 playerMovement.Slow(slowVelocity, slowJumpSpeed);
