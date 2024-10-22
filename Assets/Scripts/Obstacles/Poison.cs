@@ -14,42 +14,27 @@ public class Poison : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerMovement = other.gameObject.GetComponentInChildren<PlayerMovement>();
-            var playerLife = other.gameObject.GetComponentInChildren<PlayerLife>();
-            if (playerMovement != null && playerLife != null)
-            {
-                playerLife.RemoveDamagePerSecond();
-                playerMovement.Slow(slowVelocity, slowJumpSpeed);
-            }
-        } 
+            PlayerLifeManager.Instance.RemoveDamagePerSecond();
+            PlayerMovement.Instance.Slow(slowVelocity, slowJumpSpeed);
+        }
     }
 
     void OnCollisionExit2D(Collision2D other)
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerMovement = other.gameObject.GetComponentInChildren<PlayerMovement>();
-            var playerLife = other.gameObject.GetComponentInChildren<PlayerLife>();
-            if (playerMovement != null && playerLife != null)
-            {
-                playerMovement.RemoveSlow();
-                playerLife.AddDamagePerSecond(damagePerSecond, seconds);
-            }
-        } 
+            PlayerMovement.Instance.RemoveSlow();
+            PlayerLifeManager.Instance.AddDamagePerSecond(damagePerSecond, seconds);
+        }
     }
 
     void OnCollisionStay2D(Collision2D other)
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            var playerMovement = other.gameObject.GetComponentInChildren<PlayerMovement>();
-            var playerLife = other.gameObject.GetComponentInChildren<PlayerLife>();
-            if (playerMovement != null && playerLife != null)
-            {
-                playerMovement.Slow(slowVelocity, slowJumpSpeed);
-                playerLife.RemoveDamagePerSecond();
-                playerLife.TakeDamage(damagePerSecond * Time.deltaTime);
-            }
+            PlayerMovement.Instance.Slow(slowVelocity, slowJumpSpeed);
+            PlayerLifeManager.Instance.RemoveDamagePerSecond();
+            PlayerLifeManager.Instance.TakeDamage(damagePerSecond * Time.deltaTime);
         }
     }
 }
