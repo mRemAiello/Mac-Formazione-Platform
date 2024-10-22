@@ -321,6 +321,10 @@ MonoBehaviour:
   maxHP: 100
   damagePerSecond: 0
   seconds: 0
+  hpFillSpeed: 5
+  yellowHpFillSpeed: 1
+  hpSlider: {fileID: 0}
+  fillHpSlider: {fileID: 0}
 --- !u!1 &7661133869887936920
 GameObject:
   m_ObjectHideFlags: 0
