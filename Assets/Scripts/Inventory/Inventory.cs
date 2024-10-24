@@ -6,5 +6,11 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
+    [SerializeField] private List<ItemData> _items;
 
+    public void AddToInventory(ItemData item, int amount = 1)
+    {
+        // TODO: Verificare se l'oggetto già c'è (stackable)
+        _items.Add(item);
+    }
 }

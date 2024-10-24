@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Data/Player Movement")]
+[CreateAssetMenu(menuName = "Data/Movement/Player")]
 public class PlayerMovementData : ScriptableObject
 {
     [Header("Speed")]
