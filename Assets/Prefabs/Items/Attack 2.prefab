@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1407335848220810287
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 601608590332716788}
+  m_Layer: 7
+  m_Name: Ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &601608590332716788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407335848220810287}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.60499954, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 120416208174230863}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8115733599700948397
 GameObject:
   m_ObjectHideFlags: 0
@@ -13,7 +44,7 @@ GameObject:
   - component: {fileID: 5787652064640436083}
   - component: {fileID: 3480512657997419005}
   - component: {fileID: 378059299449186335}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Attack 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32,7 +63,8 @@ Transform:
   m_LocalPosition: {x: 17.26, y: -20.93, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 601608590332716788}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3944670173764189720
@@ -148,7 +180,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: fd7221f9f9b9fa14aa209eeeadb9ab09, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -158,7 +190,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &378059299449186335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,3 +204,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _itemData: {fileID: 11400000, guid: 9008a6a1ee86a394283e6c7b631a6ef0, type: 2}
+  _groundCheck: {fileID: 601608590332716788}
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  _groundCheckRadius: 0.2
+  _velocityThreshold: 0.1
+  _rb: {fileID: 3480512657997419005}
+  _collider: {fileID: 5787652064640436083}
