@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 120416208174230863}
   - component: {fileID: 3944670173764189720}
   - component: {fileID: 5787652064640436083}
-  - component: {fileID: 3480512657997419005}
   - component: {fileID: 378059299449186335}
   m_Layer: 7
   m_Name: Attack 1
@@ -107,7 +106,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 99
   m_Sprite: {fileID: -1631242408, guid: 8c5fc2639744d924fb80d91512aeec0d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -126,7 +125,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8115733599700948397}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -148,7 +147,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -164,33 +163,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.37, y: 1.31}
   m_EdgeRadius: 0
---- !u!50 &3480512657997419005
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8115733599700948397}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 86ee579d771b1944eb4235c50861b8a5, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!114 &378059299449186335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,11 +176,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _itemData: {fileID: 11400000, guid: 3edf5231b7c419f4daa033b7f645d2f5, type: 2}
-  _groundCheck: {fileID: 5816692809028657573}
-  _groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  _groundCheckRadius: 0.2
-  _velocityThreshold: 0.1
-  _rb: {fileID: 3480512657997419005}
   _collider: {fileID: 5787652064640436083}
+  _particleEffect: {fileID: 3799573895310331255, guid: 5d0da77c3d88d73458552504f4410d24, type: 3}

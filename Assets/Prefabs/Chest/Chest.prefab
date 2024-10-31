@@ -98,11 +98,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 079da12c89cb4b346ae46985c9f8b536, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 72
   _timeBetweenSpawn: 0.65
+  _firstAnimationDuration: 1
+  _firstAnimationEase: 15
+  _finalAnimationDuration: 0.5
+  _finalAnimationEase: 15
   _minForceX: 2
   _maxForceX: 3
-  _minForceY: 8
-  _maxForceY: 12
+  _minForceY: 4
+  _maxForceY: 5.5
   _itemsToDrop: 4
   _drops:
   - _item: {fileID: 11400000, guid: 6b6c77bc1993f3c41b228ec8742284a0, type: 2}
