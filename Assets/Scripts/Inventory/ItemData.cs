@@ -8,7 +8,7 @@ public abstract class ItemData : ScriptableObject
     [SerializeField] private GameObject _itemPrefab;
     [SerializeField] private Sprite _itemSprite;
     [SerializeField] private ItemCategory _itemCategory;
-    [SerializeField] private bool _isVisible = true;
+    [SerializeField] private bool _isVisible = false;
 
     //
     public GameObject Prefab => _itemPrefab;
