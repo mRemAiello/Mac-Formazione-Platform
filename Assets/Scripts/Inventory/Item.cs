@@ -6,6 +6,7 @@ using UnityEngine;
 public class Item : MonoBehaviour
 {
     [SerializeField] private ItemData _itemData;
+    [SerializeField, Range(1, 99999)] private int _amount = 1;
 
     [Space]
     [SerializeField] private Collider2D _collider;
@@ -26,13 +27,16 @@ public class Item : MonoBehaviour
 
         if (other.gameObject.tag.Equals("Player"))
         {
-            PlayerInventory.Instance.AddToInventory(_itemData);
+            PlayerInventory.Instance.AddToInventory(_itemData, _amount);
 
             //
             _isItemPicked = true;
 
             //
-            Instantiate(_particleEffect, transform.position, Quaternion.identity);
+            GameObject particle = Instantiate(_particleEffect);
+            particle.transform.SetParent(PlayerMovement.Instance.transform);
+            particle.transform.localPosition = Vector3.zero;
+            particle.transform.localRotation = Quaternion.identity;
             
             // TODO: Suono
 

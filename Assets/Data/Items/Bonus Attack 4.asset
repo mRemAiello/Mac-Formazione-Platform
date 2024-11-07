@@ -15,6 +15,8 @@ MonoBehaviour:
   _itemPrefab: {fileID: 8115733599700948397, guid: 5c62ae2c8a8b20049aec85460db1107b, type: 3}
   _itemSprite: {fileID: -1631242408, guid: 8c5fc2639744d924fb80d91512aeec0d, type: 3}
   _itemCategory: 4
-  _isVisible: 0
+  _isVisible: 1
+  _showIfZero: 1
+  _isStackable: 1
   _bonusType: 1
   _amount: 1.4

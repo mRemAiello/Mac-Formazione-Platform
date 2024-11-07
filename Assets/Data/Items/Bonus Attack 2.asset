@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemPrefab: {fileID: 8115733599700948397, guid: 08e24761e8521d841abdf3c7df5fa090, type: 3}
   _itemSprite: {fileID: -1631242408, guid: 8c5fc2639744d924fb80d91512aeec0d, type: 3}
-  _itemCategory: 4
-  _isVisible: 0
+  _isVisible: 1
+  _showIfZero: 1
+  _isStackable: 1
+  _max: 1
   _bonusType: 1
-  _amount: 1.2
+  _bonusAmount: 0

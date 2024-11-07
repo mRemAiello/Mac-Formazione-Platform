@@ -23,4 +23,12 @@ public class SingleItemUI : MonoBehaviour
         _itemNumber.gameObject.SetActive(true);
         _itemNumber.text = number;
     }
+
+    public void HideItem()
+    {
+        _itemImage.sprite = null;
+        _itemNumber.text = "";
+        _itemNumber.gameObject.SetActive(false);
+        _itemImage.gameObject.SetActive(false);
+    }
 }

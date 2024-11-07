@@ -35,7 +35,6 @@ public class Drop : MonoBehaviour
         foreach (Droppable droppable in _drops)
         {
             int number = Random.Range(0, 100);
-            Debug.Log("Generato " + number);
             if (number <= droppable.Probability)
             {
                 StartCoroutine(SpawnItem(droppable, itemDropped, itemDropped * _timeBetweenSpawn));

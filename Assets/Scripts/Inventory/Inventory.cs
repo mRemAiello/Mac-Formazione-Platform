@@ -6,11 +6,51 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    [SerializeField] private List<ItemData> _items;
+    [SerializeField] private List<ItemWithAmount> _items = new List<ItemWithAmount>();
+
+    //
+    public List<ItemWithAmount> Items => _items;
+
+    void Start()
+    {
+        _items = new List<ItemWithAmount>();
+    }
+
+    public ItemWithAmount Find(ItemData itemData)
+    {
+        foreach (ItemWithAmount itemWithAmount in _items)
+        {
+            if (itemWithAmount.ItemData == itemData)
+            {
+                return itemWithAmount;
+            }
+        }
+
+        return null;
+    }
 
     public void AddToInventory(ItemData item, int amount = 1)
     {
-        // TODO: Verificare se l'oggetto già c'è (stackable)
-        _items.Add(item);
+        ItemWithAmount itemWithAmount = Find(item);
+        if (itemWithAmount == null)
+        {
+            itemWithAmount = new ItemWithAmount(item, amount);
+            _items.Add(itemWithAmount);
+        }
+        else
+        {
+            if (item.IsStackable)
+            {
+                itemWithAmount.Amount += amount;
+            }
+            else
+            {
+                itemWithAmount = new ItemWithAmount(item, amount);
+                _items.Add(itemWithAmount);
+            }
+        }
+
+        //
+        itemWithAmount.Amount = Mathf.Min(itemWithAmount.Amount, item.Max);
     }
 }

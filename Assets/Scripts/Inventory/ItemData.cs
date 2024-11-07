@@ -4,15 +4,24 @@ using UnityEngine;
 
 public abstract class ItemData : ScriptableObject
 {
-    // TODO: ID
+    [Header("Graphics")]
     [SerializeField] private GameObject _itemPrefab;
     [SerializeField] private Sprite _itemSprite;
-    [SerializeField] private ItemCategory _itemCategory;
+
+    [Header("Display")]
     [SerializeField] private bool _isVisible = false;
+    [SerializeField] private bool _showIfZero = true;
+    [SerializeField] private bool _isStackable = true;
+
+    [Header("Ranges")]
+    [SerializeField, Range(1, 99999)] private int _max = 9999;
 
     //
     public GameObject Prefab => _itemPrefab;
     public Sprite Sprite => _itemSprite;
-    public ItemCategory Category => _itemCategory;
+    public abstract ItemCategory Category { get; }
     public bool IsVisible => _isVisible;
+    public bool ShowIfZero => _showIfZero;
+    public bool IsStackable => _isStackable;
+    public int Max => _max;
 }
