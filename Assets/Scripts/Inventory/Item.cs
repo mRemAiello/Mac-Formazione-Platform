@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 // TODO: Ease DotTween
@@ -17,6 +19,18 @@ public class Item : MonoBehaviour
 
     //
     private bool _isItemPicked = false;
+    private List<Sequence> _sequences;
+
+    public void AddSequence(Sequence sequence)
+    {
+        if (_sequences == null)
+        {
+            _sequences = new List<Sequence>();
+        }
+
+        //
+        _sequences.Add(sequence);
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -39,6 +53,12 @@ public class Item : MonoBehaviour
             particle.transform.localRotation = Quaternion.identity;
             
             // TODO: Suono
+
+            //
+            foreach (Sequence sequence in _sequences)
+            {
+                sequence?.Kill();
+            }
 
             //
             Destroy(gameObject);

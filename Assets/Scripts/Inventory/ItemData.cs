@@ -5,7 +5,6 @@ using UnityEngine;
 public abstract class ItemData : ScriptableObject
 {
     [Header("Graphics")]
-    [SerializeField] private GameObject _itemPrefab;
     [SerializeField] private Sprite _itemSprite;
 
     [Header("Display")]
@@ -17,7 +16,6 @@ public abstract class ItemData : ScriptableObject
     [SerializeField, Range(1, 99999)] private int _max = 9999;
 
     //
-    public GameObject Prefab => _itemPrefab;
     public Sprite Sprite => _itemSprite;
     public abstract ItemCategory Category { get; }
     public bool IsVisible => _isVisible;

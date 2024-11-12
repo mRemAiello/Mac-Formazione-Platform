@@ -6,10 +6,10 @@ using UnityEngine;
 [Serializable]
 public class Droppable
 {
-    [SerializeField] private ItemData _item;
+    [SerializeField] private GameObject _itemPrefab;
     [SerializeField] private float _probability;
 
     //
-    public ItemData Data => _item;
+    public GameObject ItemPrefab => _itemPrefab;
     public float Probability => _probability;
 }

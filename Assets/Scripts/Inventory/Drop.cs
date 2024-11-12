@@ -9,6 +9,7 @@ public class Drop : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
 
     [Header("Animation")]
+    [SerializeField] private float _openingTime;
     [SerializeField] private float _timeBetweenSpawn = 0.4f;
     [SerializeField] private float _firstAnimationDuration = 0;
     [SerializeField] private Ease _firstAnimationEase;
@@ -31,13 +32,21 @@ public class Drop : MonoBehaviour
             return;
         }
 
+        //
         int itemDropped = 0;
         foreach (Droppable droppable in _drops)
         {
             int number = Random.Range(0, 100);
             if (number <= droppable.Probability)
             {
-                StartCoroutine(SpawnItem(droppable, itemDropped, itemDropped * _timeBetweenSpawn));
+                if (number == 0)
+                {
+                    StartCoroutine(SpawnItem(droppable, itemDropped, _openingTime));
+                }
+                else
+                {
+                    StartCoroutine(SpawnItem(droppable, itemDropped, (itemDropped - 1) * _timeBetweenSpawn));
+                }
 
                 //
                 itemDropped++;
@@ -56,7 +65,7 @@ public class Drop : MonoBehaviour
         yield return new WaitForSeconds(time);
 
         //
-        GameObject obj = Instantiate(droppable.Data.Prefab, transform.position, Quaternion.identity);
+        GameObject obj = Instantiate(droppable.ItemPrefab, transform.position, Quaternion.identity);
 
         //
         float x;
@@ -75,11 +84,18 @@ public class Drop : MonoBehaviour
 
         //
         Sequence sequence = DOTween.Sequence();
+        Item item = obj.GetComponent<Item>();
+        if (item != null)
+        {
+           item.AddSequence(sequence);
+        }
+
+        //
         sequence.Insert(0, obj.transform.DOLocalMove(newPos, _firstAnimationDuration)).SetEase(_firstAnimationEase);
-        sequence.OnComplete(() => { OnAnimationCompleted(obj, newPos); });
+        sequence.OnComplete(() => { OnAnimationCompleted(obj, item, newPos); });
     }
 
-    private void OnAnimationCompleted(GameObject obj, Vector3 newPos)
+    private void OnAnimationCompleted(GameObject obj, Item item, Vector3 newPos)
     {
         if (obj.TryGetComponent<Collider2D>(out var collider))
         {
@@ -94,9 +110,14 @@ public class Drop : MonoBehaviour
             finalPos.y += raycastHits.collider.bounds.size.y / 2;
             finalPos.y += collider.bounds.size.y / 2;
             finalPos.z = 0;
-      
+
             //
             Sequence sequence = DOTween.Sequence();
+
+            //
+            item.AddSequence(sequence);
+
+            //
             sequence.Insert(0, obj.transform.DOLocalMove(finalPos, _finalAnimationDuration)).SetEase(_finalAnimationEase);
         }
     }

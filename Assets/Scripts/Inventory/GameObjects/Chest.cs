@@ -27,8 +27,8 @@ public class Chest : MonoBehaviour
         //
         _collider.enabled = false;
 
-        // TODO: Animazione
-        //_animator.SetBool("Opened", true);
+        // 
+        _animator.SetTrigger("Open");
 
         //
         _drop.DropItems();
