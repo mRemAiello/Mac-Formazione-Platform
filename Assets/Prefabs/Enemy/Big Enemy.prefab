@@ -135,7 +135,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!70 &6145215229451807290
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -185,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyData: {fileID: 11400000, guid: 31ca09f16c3e5a54aa5ae358a214d358, type: 2}
   _rb: {fileID: 2193274243187398912}
+  _spriteRenderer: {fileID: 3100869348392539654}
   _animator: {fileID: 7389814503596519574}
   _pointA: {fileID: 0}
   _pointB: {fileID: 0}

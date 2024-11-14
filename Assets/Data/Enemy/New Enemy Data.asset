@@ -13,4 +13,11 @@ MonoBehaviour:
   m_Name: New Enemy Data
   m_EditorClassIdentifier: 
   _canPatrol: 1
+  _patrolWaypointThreshold: 0.5
+  _turnAnimationDurationMin: 1
+  _turnAnimationDurationMax: 2
+  _canMeleeAttack: 1
+  _sightRadius: 25
+  _meleeRange: 4
   _walkSpeed: 4
+  _runSpeed: 8
