@@ -11,11 +11,18 @@ public class Enemy : MonoBehaviour
     [SerializeField] private GameObject _pointA;
     [SerializeField] private GameObject _pointB;
 
+    [Header("Melee Attack")]
+    [SerializeField] private GameObject _attackColliderGameObject;
+
     //
     private Transform _currentPoint;
     private float _distanceToEnemy;
+    private EnemyOrientation _enemyOrientation = EnemyOrientation.Right;
+    private bool _wasPrevInSight = false;
     private bool _enemyInSight = false;
     private bool _enemyInMeleeRange = false;
+    private bool _isDeath = false;
+    private bool _isAttacking = false;
 
     void Start()
     {
@@ -24,6 +31,10 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
+        // TODO: Triggerare la morte
+        if (_isDeath)
+            return;
+
         //
         Patrol();
 
@@ -33,8 +44,8 @@ public class Enemy : MonoBehaviour
         // TODO: Attacco melee / ranged
         FollowEnemy();
 
-        // TODO: 
-        //MeleeAttack();
+        //  
+        MeleeAttack();
 
         // TODO: 
         //RangedAttack();
@@ -47,13 +58,15 @@ public class Enemy : MonoBehaviour
 
     private void Flip()
     {
-        if (_spriteRenderer.flipX)
+        if (_enemyOrientation == EnemyOrientation.Left)
         {
             transform.localScale = new Vector3(1, 1, 1);
+            _enemyOrientation = EnemyOrientation.Right;
         }
         else
         {
             transform.localScale = new Vector3(-1, 1, 1);
+            _enemyOrientation = EnemyOrientation.Left;
         }
     }
 
@@ -65,6 +78,10 @@ public class Enemy : MonoBehaviour
 
         //
         if (_enemyInSight)
+            return;
+
+        //
+        if (_isAttacking)
             return;
 
         //
@@ -119,6 +136,7 @@ public class Enemy : MonoBehaviour
     // TODO: Implementare knockback
     private void CheckEnemyInSight()
     {
+        _wasPrevInSight = _enemyInSight;
         _distanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
         if (_distanceToEnemy < _enemyData.SightRadius)
         {
@@ -127,8 +145,21 @@ public class Enemy : MonoBehaviour
         else
         {
             _enemyInSight = false;
+        }
 
-            // TODO: impostare punto A o punto B
+        //
+        if (_wasPrevInSight && !_enemyInSight)
+        {
+            if (_enemyOrientation == EnemyOrientation.Left)
+            {
+                _currentPoint = _pointB.transform;
+                Flip();
+            }
+            else
+            {
+                _currentPoint = _pointA.transform;
+                Flip();
+            }
         }
     }
 
@@ -138,26 +169,87 @@ public class Enemy : MonoBehaviour
         if (!_enemyInSight)
             return;
 
-        // TODO: Nemico in range di attacco, return
+        // 
+        if (_isAttacking)
+            return;
 
         //
         if (transform.position.x > PlayerMovement.Instance.transform.position.x)
         {
-            _rb.velocity = new Vector2(-_enemyData.RunSpeed, 0); 
+            if (_enemyOrientation == EnemyOrientation.Right)
+            {
+                Flip();
+            }
+            _rb.velocity = new Vector2(-_enemyData.RunSpeed, 0);
         }
         else
         {
-            _rb.velocity = new Vector2(_enemyData.RunSpeed, 0); 
+            if (_enemyOrientation == EnemyOrientation.Left)
+            {
+                Flip();
+            }
+            _rb.velocity = new Vector2(_enemyData.RunSpeed, 0);
         }
+    }
+
+    void MeleeAttack()
+    {
+        //
+        if (!_enemyInSight)
+            return;
+
+        //
+        if (_isAttacking)
+            return;
+
+        // TODO: Controlla la y, 
+        _distanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
+        if (_distanceToEnemy <= _enemyData.MeleeRange)
+        {
+            _rb.velocity = Vector2.zero;
+
+            // TODO: Eventualmente scegli tra gli attacchi, con un intero che cambia l'attacco nell'Animator
+            _isAttacking = true;
+        }
+    }
+
+    public void EnableAttackCollider()
+    {
+        _attackColliderGameObject.SetActive(true);
+
+        // TODO: Passo allo script il danno
+    }
+
+    public void DisableAttackCollider()
+    {
+        _attackColliderGameObject.SetActive(false);
+    }
+
+    public void EndAttack()
+    {
+        //
+
+        //
+        Invoke(nameof(ReEnableAttack), _enemyData.DelayBetweenAttack);
+    }
+
+    private void ReEnableAttack()
+    {
+        _isAttacking = false;
     }
 
     private void UpdateAnimator()
     {
         //
         _animator.SetFloat("XVelocity", Mathf.Abs(_rb.velocity.x));
-
-        //
         _animator.SetBool("EnemyInSight", _enemyInSight);
+        _animator.SetBool("IsAttacking", _isAttacking);
+    }
+
+    private void Death()
+    {
+        // TODO: Disattiva collider, fai l'animazione, eventualmente dissolvi
+        _animator.SetBool("Death", _isDeath);
     }
 
     void OnDrawGizmos()

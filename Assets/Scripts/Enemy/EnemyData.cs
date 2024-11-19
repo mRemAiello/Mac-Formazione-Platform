@@ -15,6 +15,11 @@ public class EnemyData : ScriptableObject
     [SerializeField] private bool _canMeleeAttack = false;
     [SerializeField] private float _sightRadius = 4;
     [SerializeField] private float _meleeRange = 2;
+    [SerializeField] private float _delayBetweenAttack = 0.5f;
+
+    [Header("Ranged Attack")]
+    [SerializeField] private bool _canRangedAttack = false;
+    [SerializeField] private float _rangedSightRadius = 4;
 
     [Header("Movement")]
     [SerializeField] private float _walkSpeed = 2;
@@ -22,12 +27,17 @@ public class EnemyData : ScriptableObject
 
     //
     public bool CanPatrol => _canPatrol;
+    public bool CanMeleeAttack => _canMeleeAttack;
+    public bool CanRangedAttack => _canRangedAttack;
+
+    //
     public float TurnAnimationDurationMin => _turnAnimationDurationMin;
     public float TurnAnimationDurationMax => _turnAnimationDurationMax;
     public float PatrolWaypointThreshold => _patrolWaypointThreshold;
-    public bool CanMeleeAttack => _canMeleeAttack;
+
     public float SightRadius => _sightRadius;
     public float MeleeRange => _meleeRange;
+    public float DelayBetweenAttack => _delayBetweenAttack;
     public float WalkSpeed => _walkSpeed;
     public float RunSpeed => _runSpeed;
 }
