@@ -200,9 +200,9 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_LinearDrag: 0.4
+  m_AngularDrag: 0.4
+  m_GravityScale: 25
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -265,6 +265,8 @@ MonoBehaviour:
   _rb: {fileID: 2193274243187398912}
   _spriteRenderer: {fileID: 3100869348392539654}
   _animator: {fileID: 7389814503596519574}
+  _startingPoint: {fileID: 0}
   _pointA: {fileID: 0}
   _pointB: {fileID: 0}
   _attackColliderGameObject: {fileID: 678430027975325220}
+  _smokeVFX: {fileID: 1025285306637258, guid: d8f0099df63275647a8bcf646df1ca00, type: 3}

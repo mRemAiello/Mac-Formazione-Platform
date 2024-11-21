@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f41ff4cfb100ea44a837d6c773c0466, type: 3}
   m_Name: Enemy Shield
   m_EditorClassIdentifier: 
+  _sightRadius: 15
+  _sightThresholdY: 2
+  _aggroRange: 50
   _canPatrol: 1
-  _patrolWaypointThreshold: 0.5
+  _patrolWaypointThreshold: 1
   _turnAnimationDurationMin: 1
   _turnAnimationDurationMax: 2
   _canMeleeAttack: 1
-  _sightRadius: 15
   _meleeRange: 3
   _delayBetweenAttack: 0.35
   _canRangedAttack: 0
   _rangedSightRadius: 4
   _walkSpeed: 4
   _runSpeed: 8
+  _resetTime: 0.6

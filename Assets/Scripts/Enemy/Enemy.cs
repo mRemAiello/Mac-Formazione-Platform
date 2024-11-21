@@ -1,3 +1,4 @@
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,22 +9,28 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Animator _animator;
 
     [Header("Patrol")]
+    [SerializeField] private GameObject _startingPoint;
     [SerializeField] private GameObject _pointA;
     [SerializeField] private GameObject _pointB;
 
     [Header("Melee Attack")]
     [SerializeField] private GameObject _attackColliderGameObject;
 
+    [Header("VFX")]
+    [SerializeField] private GameObject _smokeVFX;
+
     //
+    private EnemyOrientation _enemyOrientation = EnemyOrientation.Right;
     private Transform _currentPoint;
     private float _distanceToEnemy;
-    private EnemyOrientation _enemyOrientation = EnemyOrientation.Right;
     private bool _wasPrevInSight = false;
     private bool _enemyInSight = false;
     private bool _enemyInMeleeRange = false;
     private bool _isDeath = false;
     private bool _isAttacking = false;
+    private bool _forceDisable = false;
 
+    //
     void Start()
     {
         _currentPoint = _pointB.transform;
@@ -31,8 +38,12 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        // TODO: Triggerare la morte
+        //
         if (_isDeath)
+            return;
+
+        //
+        if (_forceDisable)
             return;
 
         //
@@ -50,8 +61,12 @@ public class Enemy : MonoBehaviour
         // TODO: 
         //RangedAttack();
 
-        // TODO: Aggro Range superato, torna indietro e fai Patrolling
+        //
+        CheckAggroDistance();
+    }
 
+    void LateUpdate()
+    {
         //
         UpdateAnimator();
     }
@@ -138,7 +153,14 @@ public class Enemy : MonoBehaviour
     {
         _wasPrevInSight = _enemyInSight;
         _distanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
-        if (_distanceToEnemy < _enemyData.SightRadius)
+        
+        // Controllo le Y
+        float enemyY = PlayerMovement.Instance.transform.position.y;
+        float minY = Mathf.Min(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY);
+        float maxY = Mathf.Max(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY); 
+
+        // Controllo tutti i dati
+        if (_distanceToEnemy < _enemyData.SightRadius && enemyY >= minY && enemyY <= maxY)
         {
             _enemyInSight = true;
         }
@@ -238,6 +260,50 @@ public class Enemy : MonoBehaviour
         _isAttacking = false;
     }
 
+    private void CheckAggroDistance()
+    {
+        //
+        if (!_enemyInSight)
+            return;
+
+        //
+        if (_isAttacking)
+            return;
+
+        //
+        float distance = Vector2.Distance(_startingPoint.transform.position, transform.position);
+        if (distance >= _enemyData.AggroRange)
+        {
+            TeleportToStartPoint();
+        }
+    }
+
+    private void TeleportToStartPoint()
+    {
+        //
+        Instantiate(_smokeVFX, transform.position, Quaternion.identity);
+
+        //
+        _forceDisable = true;
+        _rb.velocity = Vector2.zero;
+
+        //
+        Invoke(nameof(ResetToStartPosition), _enemyData.ResetTime);
+    }
+
+    private void ResetToStartPosition()
+    {
+        //
+        transform.position = _startingPoint.transform.position;
+        _enemyInSight = false;
+        _wasPrevInSight = false;
+        _isAttacking = false;
+        _enemyOrientation = EnemyOrientation.Right;
+        transform.localScale = new Vector3(1, 1, 1);
+        _currentPoint = _pointB.transform;
+        _forceDisable = false;
+    }
+
     private void UpdateAnimator()
     {
         //
@@ -263,6 +329,8 @@ public class Enemy : MonoBehaviour
             Gizmos.DrawLine(_pointA.transform.position, _pointB.transform.position);
 
         // Sight
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, _enemyData.AggroRange);
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, _enemyData.SightRadius);
         Gizmos.color = Color.red;
