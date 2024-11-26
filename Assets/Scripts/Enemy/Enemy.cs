@@ -1,7 +1,6 @@
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour, IDamageable
 {
     [SerializeField] private EnemyData _enemyData;
     [SerializeField] private Rigidbody2D _rb;
@@ -20,20 +19,36 @@ public class Enemy : MonoBehaviour
     [SerializeField] private GameObject _smokeVFX;
 
     //
+    private float _currentHP;
+    private float _maxHP;
+
+    //
     private EnemyOrientation _enemyOrientation = EnemyOrientation.Right;
     private Transform _currentPoint;
-    private float _distanceToEnemy;
     private bool _wasPrevInSight = false;
     private bool _enemyInSight = false;
     private bool _enemyInMeleeRange = false;
     private bool _isDeath = false;
-    private bool _isAttacking = false;
     private bool _forceDisable = false;
+
+    //
+    public Rigidbody2D InternalRigidbody => _rb;
+    public EnemyData InternalEnemyData => _enemyData;
+    protected bool IsAttacking { get; set; }
+    protected bool EnemyInSight => _enemyInSight;
+    protected float DistanceToEnemy { get; set; }
 
     //
     void Start()
     {
         _currentPoint = _pointB.transform;
+
+        //
+        _currentHP = _enemyData.HP;
+        _maxHP = _enemyData.HP;
+
+        //
+        OnPostStart();
     }
 
     void Update()
@@ -46,20 +61,23 @@ public class Enemy : MonoBehaviour
         if (_forceDisable)
             return;
 
+        // TODO: Inserire
+        // CheckDeath();
+
         //
         Patrol();
 
         //
         CheckEnemyInSight();
 
-        // TODO: Attacco melee / ranged
+        // 
         FollowEnemy();
 
         //  
         MeleeAttack();
 
-        // TODO: 
-        //RangedAttack();
+        //
+        RangedAttack();
 
         //
         CheckAggroDistance();
@@ -85,7 +103,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Patrol()
+    protected void Patrol()
     {
         // 
         if (!_enemyData.CanPatrol)
@@ -96,10 +114,10 @@ public class Enemy : MonoBehaviour
             return;
 
         //
-        if (_isAttacking)
+        if (IsAttacking)
             return;
 
-        //
+        // TODO: Controllare sotto di lui se c'è un burrone
         if (_currentPoint == _pointB.transform)
         {
             _rb.velocity = new Vector2(_enemyData.WalkSpeed, 0);
@@ -121,7 +139,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Turn()
+    protected void Turn()
     {
         //
         _rb.velocity = Vector2.zero;
@@ -133,7 +151,7 @@ public class Enemy : MonoBehaviour
         Invoke(nameof(EndTurn), timeToLaunch);
     }
 
-    private void EndTurn()
+    protected void EndTurn()
     {
         float distance = Vector2.Distance(transform.position, _currentPoint.position);
         if (distance < _enemyData.PatrolWaypointThreshold && _currentPoint == _pointB.transform)
@@ -149,18 +167,22 @@ public class Enemy : MonoBehaviour
     }
 
     // TODO: Implementare knockback
-    private void CheckEnemyInSight()
+    protected virtual void CheckEnemyInSight()
     {
+        if (!PlayerMovement.InstanceExists)
+            return;
+
+        //
         _wasPrevInSight = _enemyInSight;
-        _distanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
-        
+        DistanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
+
         // Controllo le Y
         float enemyY = PlayerMovement.Instance.transform.position.y;
         float minY = Mathf.Min(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY);
-        float maxY = Mathf.Max(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY); 
+        float maxY = Mathf.Max(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY);
 
         // Controllo tutti i dati
-        if (_distanceToEnemy < _enemyData.SightRadius && enemyY >= minY && enemyY <= maxY)
+        if (DistanceToEnemy < _enemyData.SightRadius && enemyY >= minY && enemyY <= maxY)
         {
             _enemyInSight = true;
         }
@@ -185,14 +207,18 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void FollowEnemy()
+    protected void FollowEnemy()
     {
         // 
         if (!_enemyInSight)
             return;
 
         // 
-        if (_isAttacking)
+        if (IsAttacking)
+            return;
+
+        //
+        if (!_enemyData.CanFollow)
             return;
 
         //
@@ -214,27 +240,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void MeleeAttack()
-    {
-        //
-        if (!_enemyInSight)
-            return;
-
-        //
-        if (_isAttacking)
-            return;
-
-        // TODO: Controlla la y, 
-        _distanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
-        if (_distanceToEnemy <= _enemyData.MeleeRange)
-        {
-            _rb.velocity = Vector2.zero;
-
-            // TODO: Eventualmente scegli tra gli attacchi, con un intero che cambia l'attacco nell'Animator
-            _isAttacking = true;
-        }
-    }
-
     public void EnableAttackCollider()
     {
         _attackColliderGameObject.SetActive(true);
@@ -247,17 +252,9 @@ public class Enemy : MonoBehaviour
         _attackColliderGameObject.SetActive(false);
     }
 
-    public void EndAttack()
+    public void ReEnableAttack()
     {
-        //
-
-        //
-        Invoke(nameof(ReEnableAttack), _enemyData.DelayBetweenAttack);
-    }
-
-    private void ReEnableAttack()
-    {
-        _isAttacking = false;
+        IsAttacking = false;
     }
 
     private void CheckAggroDistance()
@@ -267,7 +264,7 @@ public class Enemy : MonoBehaviour
             return;
 
         //
-        if (_isAttacking)
+        if (IsAttacking)
             return;
 
         //
@@ -297,7 +294,7 @@ public class Enemy : MonoBehaviour
         transform.position = _startingPoint.transform.position;
         _enemyInSight = false;
         _wasPrevInSight = false;
-        _isAttacking = false;
+        IsAttacking = false;
         _enemyOrientation = EnemyOrientation.Right;
         transform.localScale = new Vector3(1, 1, 1);
         _currentPoint = _pointB.transform;
@@ -309,13 +306,24 @@ public class Enemy : MonoBehaviour
         //
         _animator.SetFloat("XVelocity", Mathf.Abs(_rb.velocity.x));
         _animator.SetBool("EnemyInSight", _enemyInSight);
-        _animator.SetBool("IsAttacking", _isAttacking);
+        _animator.SetBool("IsAttacking", IsAttacking);
     }
 
     private void Death()
     {
-        // TODO: Disattiva collider, fai l'animazione, eventualmente dissolvi
+        // TODO: Disattiva collider
         _animator.SetBool("Death", _isDeath);
+
+        //
+        _isDeath = true;
+
+        //
+        OnPostDeath();
+    }
+
+    public void TakeDamage(float damage)
+    {
+        // TODO:
     }
 
     void OnDrawGizmos()
@@ -329,14 +337,23 @@ public class Enemy : MonoBehaviour
             Gizmos.DrawLine(_pointA.transform.position, _pointB.transform.position);
 
         // Sight
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, _enemyData.AggroRange);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, _enemyData.SightRadius);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _enemyData.MeleeRange);
+        if (_enemyData != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, _enemyData.AggroRange);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, _enemyData.SightRadius);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, _enemyData.MeleeRange);
+        }
 
         //
         Gizmos.color = Color.white;
     }
+
+    //
+    public abstract void OnPostStart();
+    public abstract void MeleeAttack();
+    public abstract void RangedAttack();
+    public abstract void OnPostDeath();
 }

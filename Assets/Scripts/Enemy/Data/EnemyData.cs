@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy/Enemy Data")]
 public class EnemyData : ScriptableObject
 {
+    [Header("Basic")]
+    [SerializeField] private float _hp;
+
     [Header("Sight")]
     [SerializeField] private float _sightRadius = 4;
     [SerializeField] private float _sightThresholdY = 3;
@@ -12,6 +15,7 @@ public class EnemyData : ScriptableObject
 
     [Header("Patrol")]
     [SerializeField] private bool _canPatrol = false;
+    [SerializeField] private bool _canFollow = true;
     [SerializeField] private float _patrolWaypointThreshold = 0.5f;
     [SerializeField] private float _turnAnimationDurationMin = 0.3f;
     [SerializeField] private float _turnAnimationDurationMax = 0.3f;
@@ -19,11 +23,13 @@ public class EnemyData : ScriptableObject
     [Header("Melee Attack")]
     [SerializeField] private bool _canMeleeAttack = false;
     [SerializeField] private float _meleeRange = 2;
+    [SerializeField] private float _meleeDamage = 2;
     [SerializeField] private float _delayBetweenAttack = 0.5f;
     
     [Header("Ranged Attack")]
     [SerializeField] private bool _canRangedAttack = false;
     [SerializeField] private float _rangedSightRadius = 4;
+    [SerializeField] private float _rangedDamage = 2;
 
     [Header("Movement")]
     [SerializeField] private float _walkSpeed = 2;
@@ -33,7 +39,11 @@ public class EnemyData : ScriptableObject
     [SerializeField] private float _resetTime = 2.5f;
 
     //
+    public float HP => _hp;
+
+    //
     public bool CanPatrol => _canPatrol;
+    public bool CanFollow => _canFollow;
     public bool CanMeleeAttack => _canMeleeAttack;
     public bool CanRangedAttack => _canRangedAttack;
 
@@ -47,6 +57,8 @@ public class EnemyData : ScriptableObject
     public float SightRadius => _sightRadius;
     public float SightThresholdY => _sightThresholdY;
     public float MeleeRange => _meleeRange;
+    public float MeleeDamage => _meleeDamage;
+    public float RangedDamage => _rangedDamage;
     public float DelayBetweenAttack => _delayBetweenAttack;
     public float WalkSpeed => _walkSpeed;
     public float RunSpeed => _runSpeed;

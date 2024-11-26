@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerLifeManager : Singleton<PlayerLifeManager>
+public class PlayerLifeManager : Singleton<PlayerLifeManager>, IDamageable
 {
     private float _currentHP;
     public float maxHP;
