@@ -12,6 +12,7 @@ public class PlayerLifeManager : Singleton<PlayerLifeManager>, IDamageable
     public float hpFillSpeed;
     public float yellowHpFillSpeed;
 
+    // TODO: Event System
     public Slider hpSlider;
     public Slider fillHpSlider;
 

@@ -13,7 +13,7 @@ public class PlayerAttack : MonoBehaviour
 
     void Start()
     {
-        _triggerMeleeAttack.Init(_playerData.Damage);
+        //_triggerMeleeAttack.Init(_playerData.Damage);
     }
 
     void Update()
