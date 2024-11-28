@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class Enemy : MonoBehaviour, IDamageable
 {
     [SerializeField] private EnemyData _enemyData;
     [SerializeField] private Rigidbody2D _rb;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Collider2D _enemyCollider;
     [SerializeField] private Animator _animator;
 
     [Header("Patrol")]
@@ -15,6 +17,12 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     [Header("Melee Attack")]
     [SerializeField] private GameObject _attackColliderGameObject;
 
+    [Header("UI")]
+    [SerializeField] private Slider _redSlider;
+    [SerializeField] private Slider _yellowSlider;
+    [SerializeField] private float _redFillSpeed;
+    [SerializeField] private float _yellowHpFillSpeed;
+
     [Header("VFX")]
     [SerializeField] private GameObject _smokeVFX;
 
@@ -23,7 +31,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     private float _maxHP;
 
     //
-    private EnemyOrientation _enemyOrientation = EnemyOrientation.Right;
+    private CharacterOrientation _enemyOrientation = CharacterOrientation.Right;
     private Transform _currentPoint;
     private bool _wasPrevInSight = false;
     private bool _enemyInSight = false;
@@ -48,6 +56,14 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         _maxHP = _enemyData.HP;
 
         //
+        _redSlider.minValue = 0;
+        _yellowSlider.minValue = 0;
+        _redSlider.maxValue = _maxHP;
+        _yellowSlider.maxValue = _maxHP;
+        _redSlider.value = _currentHP;
+        _yellowSlider.value = _currentHP;
+
+        //
         OnPostStart();
     }
 
@@ -60,9 +76,6 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         //
         if (_forceDisable)
             return;
-
-        // TODO: Inserire
-        // CheckDeath();
 
         //
         Patrol();
@@ -86,20 +99,23 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     void LateUpdate()
     {
         //
+        UpdateHP();
+
+        //
         UpdateAnimator();
     }
 
     private void Flip()
     {
-        if (_enemyOrientation == EnemyOrientation.Left)
+        if (_enemyOrientation == CharacterOrientation.Left)
         {
             transform.localScale = new Vector3(1, 1, 1);
-            _enemyOrientation = EnemyOrientation.Right;
+            _enemyOrientation = CharacterOrientation.Right;
         }
         else
         {
             transform.localScale = new Vector3(-1, 1, 1);
-            _enemyOrientation = EnemyOrientation.Left;
+            _enemyOrientation = CharacterOrientation.Left;
         }
     }
 
@@ -169,15 +185,15 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     // TODO: Implementare knockback
     protected virtual void CheckEnemyInSight()
     {
-        if (!PlayerMovement.InstanceExists)
+        if (!PlayerController.InstanceExists)
             return;
 
         //
         _wasPrevInSight = _enemyInSight;
-        DistanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
+        DistanceToEnemy = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
 
         // Controllo le Y
-        float enemyY = PlayerMovement.Instance.transform.position.y;
+        float enemyY = PlayerController.Instance.transform.position.y;
         float minY = Mathf.Min(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY);
         float maxY = Mathf.Max(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY);
 
@@ -194,7 +210,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         //
         if (_wasPrevInSight && !_enemyInSight)
         {
-            if (_enemyOrientation == EnemyOrientation.Left)
+            if (_enemyOrientation == CharacterOrientation.Left)
             {
                 _currentPoint = _pointB.transform;
                 Flip();
@@ -222,9 +238,9 @@ public abstract class Enemy : MonoBehaviour, IDamageable
             return;
 
         //
-        if (transform.position.x > PlayerMovement.Instance.transform.position.x)
+        if (transform.position.x > PlayerController.Instance.transform.position.x)
         {
-            if (_enemyOrientation == EnemyOrientation.Right)
+            if (_enemyOrientation == CharacterOrientation.Right)
             {
                 Flip();
             }
@@ -232,7 +248,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         }
         else
         {
-            if (_enemyOrientation == EnemyOrientation.Left)
+            if (_enemyOrientation == CharacterOrientation.Left)
             {
                 Flip();
             }
@@ -295,7 +311,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         _enemyInSight = false;
         _wasPrevInSight = false;
         IsAttacking = false;
-        _enemyOrientation = EnemyOrientation.Right;
+        _enemyOrientation = CharacterOrientation.Right;
         transform.localScale = new Vector3(1, 1, 1);
         _currentPoint = _pointB.transform;
         _forceDisable = false;
@@ -311,11 +327,17 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
     private void Death()
     {
-        // TODO: Disattiva collider
-        _animator.SetBool("Death", _isDeath);
-
         //
         _isDeath = true;
+
+        // TODO: Disattiva collider
+        _animator.SetBool("IsAttacking", false);
+        _animator.SetBool("Death", _isDeath);
+
+        // Disattivo collider e rigidbody
+        _rb.velocity = Vector3.zero;
+        _rb.isKinematic = true;
+        _enemyCollider.enabled = false;
 
         //
         OnPostDeath();
@@ -323,7 +345,25 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damage)
     {
-        // TODO:
+        _currentHP -= damage;
+
+        //
+        if (_currentHP <= 0)
+        {
+            _currentHP = 0;
+            Death();
+        }
+    }
+
+    private void UpdateHP()
+    {
+        //
+        float target = Mathf.Lerp(_redSlider.value, _currentHP, _redFillSpeed * Time.deltaTime);
+        float targetEffect = Mathf.Lerp(_yellowSlider.value, _currentHP, _yellowHpFillSpeed * Time.deltaTime);
+
+        //
+        _redSlider.value = target;
+        _yellowSlider.value = targetEffect;
     }
 
     void OnDrawGizmos()

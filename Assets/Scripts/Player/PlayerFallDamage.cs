@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerFallDamage : MonoBehaviour
 {
     [SerializeField] private PlayerLifeManager _playerLife;
-    [SerializeField] private PlayerMovement _playerMovement;
+    [SerializeField] private PlayerController _playerMovement;
     [SerializeField] private float _fallThreshold = 40f;
     [SerializeField] private float _damage;
     [SerializeField] private float _damageMultiplier = 1;

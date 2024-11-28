@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Movement/Player")]
@@ -39,6 +37,10 @@ public class PlayerMovementData : ScriptableObject
     [SerializeField] private float _minYVelocity = 10;
     [SerializeField] private float _maxYVelocity = 10;
 
+    [Header("Attack")]
+    [SerializeField] private float _attackDamage = 0.5f;
+    [SerializeField] private float _attackDelay = 0.5f;
+
     // Property
     public float MoveSpeed => _moveSpeed;
     public LayerMask GroundLayer => _groundLayer;
@@ -57,4 +59,6 @@ public class PlayerMovementData : ScriptableObject
     public float MinYVelocity => _minYVelocity;
     public float MaxYVelocity => _maxYVelocity;
     public int MaxJumps => _maxJumps;
+    public float AttackDamage => _attackDamage;
+    public float AttackDelay => _attackDelay;
 }

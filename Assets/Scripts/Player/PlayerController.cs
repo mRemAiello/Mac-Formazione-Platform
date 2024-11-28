@@ -1,20 +1,29 @@
 using System;
 using UnityEngine;
 
-public class PlayerMovement : Singleton<PlayerMovement>
+public class PlayerController : Singleton<PlayerController>
 {
-    [SerializeField] private PlayerMovementData _playerMovementData;
+    [Header("Data")]
+    [SerializeField] private PlayerMovementData _playerData;
 
-    [Space]
+    [Header("Components")]
     [SerializeField] private Rigidbody2D _rb;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Animator _animator;
 
+    [Header("Ground")]
     // Oggetto che verifica il contatto con il terreno    
     [SerializeField] private Transform _groundCheck;
 
+    [Header("Attack")]
+    [SerializeField] private Transform _attackColliderPosition;
+    [SerializeField] private GameObject _attackCollider;
+
     //
-    private bool _isJumping = false;
+    private PlayerStates _playerState = PlayerStates.Idle;
+    private CharacterOrientation _playerOrientation;
+
+    //
     private float _standardGravityScale;
     private int _jumpCount;
     private float _jumpTime;
@@ -25,7 +34,9 @@ public class PlayerMovement : Singleton<PlayerMovement>
     private float _slowSpeed = 1;
     private float _coyoteTimeCounter = 0;
     private float _jumpBufferCounter = 0;
+    private GameObject _triggerMeleeAttackGameObject;
 
+    //
     void Start()
     {
         _standardGravityScale = _rb.gravityScale;
@@ -40,6 +51,12 @@ public class PlayerMovement : Singleton<PlayerMovement>
 
         // Muovi
         Move();
+     
+        //
+        if (Input.GetKey(KeyCode.E))
+        {
+            Attack();
+        }
     }
 
     private void LateUpdate()
@@ -53,9 +70,6 @@ public class PlayerMovement : Singleton<PlayerMovement>
         // Limita velocità
         ClampVelocity2D();
 
-        // Flip Sprite
-        Flip();
-
         // Ricontrolla le condizioni di salto
         ResetJump();
 
@@ -68,27 +82,26 @@ public class PlayerMovement : Singleton<PlayerMovement>
 
     private void Flip()
     {
-        // Flip della sprite in base alla direzione
-        if (_moveInputHorizontal > 0)
+        if (_playerOrientation == CharacterOrientation.Left)
         {
-            _spriteRenderer.flipX = false; // Non capovolge la sprite
+            transform.localScale = new Vector3(-1, 1, 1);  
         }
-        else if (_moveInputHorizontal < 0)
+        else
         {
-            _spriteRenderer.flipX = true; // Capovolge la sprite
+            transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
     public bool IsGrounded()
     {
         // Controllo se il personaggio è a terra in base alla collisione e alla velocità verticale
-        bool groundedByCollision = Physics2D.OverlapCircle(_groundCheck.position, _playerMovementData.GroundCheckRadius, _playerMovementData.GroundLayer);
+        bool groundedByCollision = Physics2D.OverlapCircle(_groundCheck.position, _playerData.GroundCheckRadius, _playerData.GroundLayer);
 
         //
         // Debug.Log(groundedByCollision + " - " + Mathf.Abs(_rb.velocity.y));
 
         // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
-        if (groundedByCollision && Mathf.Abs(_rb.velocity.y) <= _playerMovementData.VelocityThreshold)
+        if (groundedByCollision && Mathf.Abs(_rb.velocity.y) <= _playerData.VelocityThreshold)
         {
             return true;
         }
@@ -98,8 +111,57 @@ public class PlayerMovement : Singleton<PlayerMovement>
 
     private void Move()
     {
+        if (_playerState == PlayerStates.Attack)
+        {
+            _rb.velocity = new Vector2(0, _rb.velocity.y);
+            return;
+        }
+        
         // Movimento del rigidbody impostando la velocità
-        _rb.velocity = new Vector2(_moveInputHorizontal * _playerMovementData.MoveSpeed * _slowSpeed, _rb.velocity.y);
+        _rb.velocity = new Vector2(_moveInputHorizontal * _playerData.MoveSpeed * _slowSpeed, _rb.velocity.y);
+        if (_rb.velocity.x > 0)
+        {
+            _playerOrientation = CharacterOrientation.Right;
+            Flip();
+        }
+        else if (_rb.velocity.x < 0)
+        {
+            _playerOrientation = CharacterOrientation.Left;
+            Flip();
+        }
+    }
+
+    private void Attack()
+    {
+        if (_playerState == PlayerStates.Attack)
+            return;
+
+        // Attiva animator mio, attiva animator slash
+        _triggerMeleeAttackGameObject = Instantiate(_attackCollider, _attackColliderPosition.position, Quaternion.identity);
+        if (_playerOrientation == CharacterOrientation.Left)
+        {
+            _triggerMeleeAttackGameObject.transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        // 
+        TriggerMeleeAttack triggerMeleeAttack = _triggerMeleeAttackGameObject.GetComponent<TriggerMeleeAttack>();
+
+        // TODO: Applicare i modificatori del danno
+        triggerMeleeAttack?.Init(_playerData.AttackDamage);
+
+        //
+        ChangeState(PlayerStates.Attack);
+
+        //
+        Invoke(nameof(ResetAttackState), _playerData.AttackDelay);
+    }
+
+    private void ResetAttackState()
+    {
+        ChangeState(PlayerStates.Idle);
+
+        //
+        Destroy(_triggerMeleeAttackGameObject);
     }
 
     private void CheckJump()
@@ -111,7 +173,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         // Coyote Time
         if (IsGrounded())
         {
-            _coyoteTimeCounter = _playerMovementData.CoyoteTime;
+            _coyoteTimeCounter = _playerData.CoyoteTime;
         }
         else
         {
@@ -121,7 +183,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         // Jump Buffering
         if (Input.GetButtonDown("Jump"))
         {
-            _jumpBufferCounter = _playerMovementData.JumpBufferTime;
+            _jumpBufferCounter = _playerData.JumpBufferTime;
         }
         else
         {
@@ -132,8 +194,8 @@ public class PlayerMovement : Singleton<PlayerMovement>
         if (_coyoteTimeCounter > 0 && _jumpBufferCounter > 0)
         {
             //Debug.Log("Primo salto");
-            _isJumping = true;
-            _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
+            ChangeState(PlayerStates.Jump);
+            _rb.velocity = new Vector2(_rb.velocity.x, _playerData.JumpForce * _slowJumpSpeed);
 
             // Incrementa il numero di salti
             _jumpCount++;
@@ -144,11 +206,11 @@ public class PlayerMovement : Singleton<PlayerMovement>
             // TODO: Spawn del fumo, cambio animazione, suono
         }
         // Doppio salto
-        else if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerMovementData.MaxJumps)
+        else if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerData.MaxJumps)
         {
             //Debug.Log("Doppio salto");
-            _isJumping = true;
-            _rb.velocity = new Vector2(_rb.velocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
+            ChangeState(PlayerStates.Jump);
+            _rb.velocity = new Vector2(_rb.velocity.x, _playerData.DoubleJumpForce * _slowJumpSpeed);
 
             // Incrementa il numero di salti
             _jumpCount++;
@@ -166,7 +228,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         }
 
         //
-        if (_isJumping)
+        if (_playerState == PlayerStates.Jump)
         {
             _jumpTime += Time.deltaTime;
         }
@@ -177,7 +239,9 @@ public class PlayerMovement : Singleton<PlayerMovement>
         // Resetta il contatore dei salti se il personaggio è a terra
         if (IsGrounded())
         {
-            _isJumping = false;
+            if (_playerState != PlayerStates.Attack)
+                ChangeState(PlayerStates.Idle);
+            
             // Resetta il numero di salti
             _jumpCount = 0;
             _jumpTime = 0;
@@ -188,9 +252,9 @@ public class PlayerMovement : Singleton<PlayerMovement>
     private void ApplyCustomGravity()
     {
         // Aumento la gravità dopo un tot secondi di salto
-        if (_isJumping && _jumpTime >= _playerMovementData.JumpDelay)
+        if (_playerState == PlayerStates.Jump && _jumpTime >= _playerData.JumpDelay)
         {
-            _rb.gravityScale *= _playerMovementData.GravityScale;
+            _rb.gravityScale *= _playerData.GravityScale;
         }
         else
         {
@@ -204,8 +268,8 @@ public class PlayerMovement : Singleton<PlayerMovement>
         if (IsGrounded() && Input.GetButtonDown("Jump") && _moveInputVertical < 0)
         {
             Vector2 pos = transform.position;
-            var distance = _playerMovementData.PlatformDistanceToCheck;
-            var layerMask = _playerMovementData.PlatformDistanceLayerMask;
+            var distance = _playerData.PlatformDistanceToCheck;
+            var layerMask = _playerData.PlatformDistanceLayerMask;
             RaycastHit2D[] hits = Physics2D.RaycastAll(pos, Vector2.down, distance, layerMask);
             if (hits != null && hits.Length > 0)
             {
@@ -227,14 +291,14 @@ public class PlayerMovement : Singleton<PlayerMovement>
     {
         //
         _animator.SetFloat("XVelocity", Math.Abs(_rb.velocity.x));
-        _animator.SetBool("IsJumping", _isJumping);
+        _animator.SetBool("IsJumping", _playerState == PlayerStates.Jump);
         _animator.SetBool("IsSlowed", _isSlowed);
     }
 
     private void ClampVelocity2D()
     {
-        float clampedX = Mathf.Clamp(_rb.velocity.x, _playerMovementData.MinXVelocity, _playerMovementData.MaxXVelocity);
-        float clampedY = Mathf.Clamp(_rb.velocity.y, _playerMovementData.MinYVelocity, _playerMovementData.MaxYVelocity);
+        float clampedX = Mathf.Clamp(_rb.velocity.x, _playerData.MinXVelocity, _playerData.MaxXVelocity);
+        float clampedY = Mathf.Clamp(_rb.velocity.y, _playerData.MinYVelocity, _playerData.MaxYVelocity);
         _rb.velocity = new Vector2(clampedX, clampedY);
     }
 
@@ -252,22 +316,31 @@ public class PlayerMovement : Singleton<PlayerMovement>
         _isSlowed = false;
     }
 
+    public void ChangeState(PlayerStates state)
+    {
+        _playerState = state;
+    }
+
     void OnDrawGizmos()
     {
+        //
+        if (_playerData == null)
+            return;
+
         // Disegno Ground Check
         if (_groundCheck != null)
         {
             // Disegna il cerchio per visualizzare il controllo del terreno nell'Editor di Unity
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(_groundCheck.position, _playerMovementData.GroundCheckRadius);
+            Gizmos.DrawSphere(_groundCheck.position, _playerData.GroundCheckRadius);
             Gizmos.color = Color.white;
         }
 
         // Disegno Raycast
-        if (_playerMovementData != null)
+        if (_playerData != null)
         {
             Gizmos.color = Color.yellow;
-            Vector2 to = (Vector2)transform.position + (Vector2.down * _playerMovementData.PlatformDistanceToCheck);
+            Vector2 to = (Vector2)transform.position + (Vector2.down * _playerData.PlatformDistanceToCheck);
             Gizmos.DrawLine(transform.position, to);
             Gizmos.color = Color.white;
         }

@@ -24,7 +24,7 @@ public class MeleeEnemy : Enemy
             return;
 
         // TODO: Controlla la y, 
-        DistanceToEnemy = Vector2.Distance(transform.position, PlayerMovement.Instance.transform.position);
+        DistanceToEnemy = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
         if (DistanceToEnemy <= InternalEnemyData.MeleeRange)
         {
             InternalRigidbody.velocity = Vector2.zero;

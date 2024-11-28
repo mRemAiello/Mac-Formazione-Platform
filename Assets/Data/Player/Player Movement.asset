@@ -33,3 +33,5 @@ MonoBehaviour:
   _maxXVelocity: 10
   _minYVelocity: -20
   _maxYVelocity: 20
+  _attackDamage: 30
+  _attackDelay: 1

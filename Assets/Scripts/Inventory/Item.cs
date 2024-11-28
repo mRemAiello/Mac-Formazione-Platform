@@ -48,7 +48,7 @@ public class Item : MonoBehaviour
 
             //
             GameObject particle = Instantiate(_particleEffect);
-            particle.transform.SetParent(PlayerMovement.Instance.transform);
+            particle.transform.SetParent(PlayerController.Instance.transform);
             particle.transform.localPosition = Vector3.zero;
             particle.transform.localRotation = Quaternion.identity;
             
