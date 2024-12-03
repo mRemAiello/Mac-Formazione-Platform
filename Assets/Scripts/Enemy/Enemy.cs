@@ -330,7 +330,10 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         //
         _isDeath = true;
 
-        // TODO: Disattiva collider
+        //
+        IsAttacking = false;
+
+        //
         _animator.SetBool("IsAttacking", false);
         _animator.SetBool("Death", _isDeath);
 

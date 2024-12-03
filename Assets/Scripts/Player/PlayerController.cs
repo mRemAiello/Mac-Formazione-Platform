@@ -191,7 +191,7 @@ public class PlayerController : Singleton<PlayerController>
         }
 
         //
-        if (_coyoteTimeCounter > 0 && _jumpBufferCounter > 0)
+        if (_coyoteTimeCounter > 0 && _jumpBufferCounter > 0 && _playerState != PlayerStates.Attack)
         {
             //Debug.Log("Primo salto");
             ChangeState(PlayerStates.Jump);
@@ -206,7 +206,7 @@ public class PlayerController : Singleton<PlayerController>
             // TODO: Spawn del fumo, cambio animazione, suono
         }
         // Doppio salto
-        else if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerData.MaxJumps)
+        else if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerData.MaxJumps && _playerState != PlayerStates.Attack)
         {
             //Debug.Log("Doppio salto");
             ChangeState(PlayerStates.Jump);
