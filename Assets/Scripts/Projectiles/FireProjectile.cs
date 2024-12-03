@@ -7,7 +7,7 @@ public class FireProjectile : MonoBehaviour
     [SerializeField] private float _speed;
 
     //
-    private Transform _enemyToSeek;
+    private Vector3 _enemyToSeek;
     private bool _seeking;
 
     void Update()
@@ -16,12 +16,12 @@ public class FireProjectile : MonoBehaviour
             return;
 
         //
-        transform.position = Vector3.Lerp(transform.position, _enemyToSeek.transform.position, _speed * Time.deltaTime);   
+        transform.position = Vector3.Lerp(transform.position, _enemyToSeek, _speed * Time.deltaTime);   
     }
 
     // TODO: Aggiungi il danno
 
-    public void Seek(Transform enemy)
+    public void Seek(Vector3 enemy)
     {
         if (_seeking)
             return;

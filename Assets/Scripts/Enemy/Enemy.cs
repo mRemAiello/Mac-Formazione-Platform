@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 {
-    [SerializeField] private EnemyData _enemyData;
+    [SerializeField] protected EnemyData _enemyData;
     [SerializeField] private Rigidbody2D _rb;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Collider2D _enemyCollider;
@@ -49,6 +49,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
     public float KnockBackTime => _enemyData.KnockBackTime;
     public float StunTime => _enemyData.StunTime;
     protected bool IsAttacking { get; set; }
+    protected bool IsRangedAttacking { get; set; }
     protected bool EnemyInSight => _enemyInSight;
     protected float DistanceToEnemy { get; set; }
 
@@ -199,7 +200,6 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         }
     }
 
-    // TODO: Implementare knockback
     protected virtual void CheckEnemyInSight()
     {
         if (!PlayerController.InstanceExists)
@@ -248,6 +248,10 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 
         // 
         if (IsAttacking)
+            return;
+
+        //
+        if (IsRangedAttacking)
             return;
 
         //
@@ -328,6 +332,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         _enemyInSight = false;
         _wasPrevInSight = false;
         IsAttacking = false;
+        IsRangedAttacking = false;
         _enemyOrientation = CharacterOrientation.Right;
         transform.localScale = new Vector3(1, 1, 1);
         _currentPoint = _pointB.transform;
@@ -340,6 +345,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         _animator.SetFloat("XVelocity", Mathf.Abs(_rb.velocity.x));
         _animator.SetBool("EnemyInSight", _enemyInSight);
         _animator.SetBool("IsAttacking", IsAttacking);
+        _animator.SetBool("IsRangedAttacking", IsRangedAttacking);
     }
 
     private void Death()
@@ -350,6 +356,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         //
         _isDeath = true;
         IsAttacking = false;
+        IsRangedAttacking = false;
         _knocked = false;
         _enemyInSight = false;
         _wasPrevInSight = false;
@@ -357,6 +364,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 
         //
         _animator.SetBool("IsAttacking", false);
+        _animator.SetBool("IsRangedAttacking", false);
         _animator.SetBool("Death", _isDeath);
 
         // Disattivo collider e rigidbody
@@ -441,11 +449,16 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 
         //
         Gizmos.color = Color.white;
+
+        //
+        OnPostDrawGizmos();
     }
 
     //
     public abstract void OnPostStart();
     public abstract void MeleeAttack();
     public abstract void RangedAttack();
+    public abstract void EndRangedAttack();
     public abstract void OnPostDeath();
+    public abstract void OnPostDrawGizmos();
 }

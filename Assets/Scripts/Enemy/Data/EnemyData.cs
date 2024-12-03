@@ -34,8 +34,9 @@ public class EnemyData : ScriptableObject
     
     [Header("Ranged Attack")]
     [SerializeField] private bool _canRangedAttack = false;
-    [SerializeField] private float _rangedSightRadius = 4;
+    [SerializeField] private float _rangedAttackRange = 4;
     [SerializeField] private float _rangedDamage = 2;
+    [SerializeField] private float _delayBetweenRangedAttack = 0.5f;
 
     [Header("Movement")]
     [SerializeField] private float _walkSpeed = 2;
@@ -66,10 +67,18 @@ public class EnemyData : ScriptableObject
     public float AggroRange => _aggroRange;
     public float SightRadius => _sightRadius;
     public float SightThresholdY => _sightThresholdY;
+
+    // Melee
     public float MeleeRange => _meleeRange;
     public float MeleeDamage => _meleeDamage;
-    public float RangedDamage => _rangedDamage;
     public float DelayBetweenAttack => _delayBetweenAttack;
+
+    // Ranged
+    public float RangedDamage => _rangedDamage;
+    public float RangedAttackRange => _rangedAttackRange;
+    public float DelayBetweenRangedAttack => _delayBetweenRangedAttack;
+
+    // Movement
     public float WalkSpeed => _walkSpeed;
     public float RunSpeed => _runSpeed;
     public float ResetTime => _resetTime;

@@ -23,6 +23,10 @@ public class MeleeEnemy : Enemy
         if (IsAttacking)
             return;
 
+        //
+        if (IsRangedAttacking)
+            return;
+
         // TODO: Controlla la y, 
         DistanceToEnemy = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
         if (DistanceToEnemy <= InternalEnemyData.MeleeRange)
@@ -36,10 +40,17 @@ public class MeleeEnemy : Enemy
 
     public override void OnPostDeath()
     {
-
     }
 
     public override void RangedAttack()
+    {
+    }
+
+    public override void EndRangedAttack()
+    {
+    }
+
+    public override void OnPostDrawGizmos()
     {
     }
 }
