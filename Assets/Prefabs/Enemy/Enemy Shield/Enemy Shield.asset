@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Enemy Shield
   m_EditorClassIdentifier: 
   _hp: 50
+  _isKnockable: 1
+  _knockBackForce: 7
+  _knockBackTime: 0.8
+  _stunTime: 0.3
   _sightRadius: 15
   _sightThresholdY: 2
   _aggroRange: 50

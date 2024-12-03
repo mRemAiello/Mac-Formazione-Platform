@@ -16,15 +16,24 @@ public class TriggerMeleeAttack : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag.Equals(_enemyTag))
+        if (!other.gameObject.tag.Equals(_enemyTag))
+            return;
+
+        //
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        damageable ??= other.GetComponentInChildren<IDamageable>();
+
+        //
+        damageable?.TakeDamage(_damage);
+
+        //
+        IKnockable knockable = other.GetComponent<IKnockable>();
+        knockable ??= other.GetComponentInChildren<IKnockable>();
+
+        //
+        if (knockable != null && knockable.IsKnockable)
         {
-            IDamageable damageable = other.GetComponent<IDamageable>();
-            damageable ??= other.GetComponentInChildren<IDamageable>();
-
-            //
-            damageable?.TakeDamage(_damage);
-
-            // TODO: Knockback
+            knockable.KnockBack(transform, knockable.KnockBackForce, knockable.KnockBackTime, knockable.StunTime);
         }
     }
 }

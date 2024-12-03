@@ -8,6 +8,12 @@ public class EnemyData : ScriptableObject
     [Header("Basic")]
     [SerializeField] private float _hp;
 
+    [Header("Knockback")]
+    [SerializeField] private bool _isKnockable = true;
+    [SerializeField] private float _knockBackForce = 2f;
+    [SerializeField] private float _knockBackTime = 0.2f;
+    [SerializeField] private float _stunTime = 0.4f;
+
     [Header("Sight")]
     [SerializeField] private float _sightRadius = 4;
     [SerializeField] private float _sightThresholdY = 3;
@@ -40,6 +46,10 @@ public class EnemyData : ScriptableObject
 
     //
     public float HP => _hp;
+    public bool IsKnockable => _isKnockable;
+    public float KnockBackForce => _knockBackForce;
+    public float KnockBackTime => _knockBackTime;
+    public float StunTime => _stunTime;
 
     //
     public bool CanPatrol => _canPatrol;

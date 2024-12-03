@@ -1,7 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class Enemy : MonoBehaviour, IDamageable
+public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 {
     [SerializeField] private EnemyData _enemyData;
     [SerializeField] private Rigidbody2D _rb;
@@ -36,12 +37,17 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     private bool _wasPrevInSight = false;
     private bool _enemyInSight = false;
     private bool _enemyInMeleeRange = false;
+    private bool _knocked = false;
     private bool _isDeath = false;
     private bool _forceDisable = false;
 
     //
     public Rigidbody2D InternalRigidbody => _rb;
     public EnemyData InternalEnemyData => _enemyData;
+    public bool IsKnockable => _enemyData.IsKnockable;
+    public float KnockBackForce => _enemyData.KnockBackForce;
+    public float KnockBackTime => _enemyData.KnockBackTime;
+    public float StunTime => _enemyData.StunTime;
     protected bool IsAttacking { get; set; }
     protected bool EnemyInSight => _enemyInSight;
     protected float DistanceToEnemy { get; set; }
@@ -71,10 +77,17 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     {
         //
         if (_isDeath)
+        {
+            _rb.velocity = Vector3.zero;
             return;
+        }
 
         //
         if (_forceDisable)
+            return;
+
+        // 
+        if (_knocked)
             return;
 
         //
@@ -131,6 +144,10 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
         //
         if (IsAttacking)
+            return;
+
+        //
+        if (_currentPoint == null)
             return;
 
         // TODO: Controllare sotto di lui se c'è un burrone
@@ -328,10 +345,15 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     private void Death()
     {
         //
-        _isDeath = true;
+        StopAllCoroutines();
 
         //
+        _isDeath = true;
         IsAttacking = false;
+        _knocked = false;
+        _enemyInSight = false;
+        _wasPrevInSight = false;
+        _currentPoint = null;
 
         //
         _animator.SetBool("IsAttacking", false);
@@ -356,6 +378,33 @@ public abstract class Enemy : MonoBehaviour, IDamageable
             _currentHP = 0;
             Death();
         }
+    }
+
+    public void KnockBack(Transform enemyTransform, float knockBackForce, float knockBackTime, float stunForce)
+    {
+        _knocked = true;
+        IsAttacking = false;
+
+        //
+        StartCoroutine(StunTimer(knockBackTime, stunForce));
+
+        //
+        Vector2 direction = (transform.position - enemyTransform.position).normalized;
+        _rb.velocity = direction * knockBackForce;
+    }
+
+    private IEnumerator StunTimer(float knockBackTime, float stunForce)
+    {
+        yield return new WaitForSeconds(knockBackTime);
+
+        //
+        _rb.velocity = Vector3.zero;
+
+        //
+        yield return new WaitForSeconds(stunForce);
+
+        //
+        _knocked = false;
     }
 
     private void UpdateHP()
