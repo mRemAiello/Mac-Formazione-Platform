@@ -1,9 +1,18 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerLifeManager : Singleton<PlayerLifeManager>, IDamageable
 {
+    [Header("References")]
+    [SerializeField] private Animator _animator;
+
+    [Header("Dead Animation")]
+    [SerializeField] private float _deadAnimationTime;
+    [SerializeField] private float _fadeAnimationTime;
+
+    //
     private float _currentHP;
     public float maxHP;
     private float damagePerSecond = 0;
@@ -35,6 +44,10 @@ public class PlayerLifeManager : Singleton<PlayerLifeManager>, IDamageable
 
     void Update()
     {
+        if (IsDead)
+            return;
+
+        //
         if (seconds > 0)
         {
             TakeDamage(damagePerSecond * Time.deltaTime);
@@ -70,11 +83,30 @@ public class PlayerLifeManager : Singleton<PlayerLifeManager>, IDamageable
             Death();
         }
 
-        // TODO: Aggiornare UI
+        // TODO: Aggiornare UI (Eventi)
     }
 
     private void Death()
     {
-        // TODO: Animazione
+        _animator.SetBool("Dead", true);
+
+        //
+        Invoke(nameof(Fade), _deadAnimationTime);
+    }
+
+    private void Fade()
+    {
+        // Dissolvenza a nero
+        FadeToBlack.Instance.StartFade();
+
+        //
+        Invoke(nameof(Respawn), _fadeAnimationTime);
+    }
+
+    private void Respawn()
+    {
+        //
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 }

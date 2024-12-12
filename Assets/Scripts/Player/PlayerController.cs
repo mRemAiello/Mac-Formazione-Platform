@@ -11,9 +11,8 @@ public class PlayerController : Singleton<PlayerController>
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Animator _animator;
 
-    [Header("Ground")]
-    // Oggetto che verifica il contatto con il terreno    
-    [SerializeField] private Transform _groundCheck;
+    [Header("Ground")]    
+    [SerializeField] private Transform _groundCheck; // Oggetto che verifica il contatto con il terreno  
 
     [Header("Attack")]
     [SerializeField] private Transform _attackColliderPosition;

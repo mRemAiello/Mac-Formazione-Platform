@@ -26,12 +26,13 @@ MonoBehaviour:
   _turnAnimationDurationMin: 1
   _turnAnimationDurationMax: 2
   _canMeleeAttack: 1
-  _meleeRange: 3
+  _meleeRange: 200
   _meleeDamage: 2
   _delayBetweenAttack: 0.35
   _canRangedAttack: 0
-  _rangedSightRadius: 4
+  _rangedAttackRange: 200
   _rangedDamage: 2
+  _delayBetweenRangedAttack: 0.5
   _walkSpeed: 4
   _runSpeed: 8
   _resetTime: 0.6

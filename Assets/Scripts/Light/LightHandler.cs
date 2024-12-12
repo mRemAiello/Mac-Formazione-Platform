@@ -9,16 +9,10 @@ public class LightHandler : Singleton<LightHandler>
     [SerializeField] private float _duration;
 
     //
-    [SerializeField] private Color _currentColor;
-    [SerializeField] private Color _startColor;
-    [SerializeField] private Color _endColor;
-    [SerializeField] private bool _isEffectOn = false;
-
-    void Start()
-    {
-        // TODO: Rimuovere
-        StartEffect(Color.black);
-    }
+    private Color _currentColor;
+    private Color _startColor;
+    private Color _endColor;
+    private bool _isEffectOn = false;
 
     void Update()
     {
