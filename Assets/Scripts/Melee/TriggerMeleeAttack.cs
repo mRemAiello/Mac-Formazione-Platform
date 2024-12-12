@@ -7,15 +7,21 @@ public class TriggerMeleeAttack : MonoBehaviour
     [SerializeField] private string _enemyTag;
 
     //
+    private IDamageable _sourceDamage;
     private float _damage;
 
-    public void Init(float damage)
+    public void Init(IDamageable sourceDamage, float damage)
     {
+        _sourceDamage = sourceDamage;
         _damage = damage;
     }
 
     public void OnTriggerEnter2D(Collider2D other)
     {
+        if (_sourceDamage == null || _sourceDamage.IsDead)
+            return;
+
+        //
         if (!other.gameObject.tag.Equals(_enemyTag))
             return;
 

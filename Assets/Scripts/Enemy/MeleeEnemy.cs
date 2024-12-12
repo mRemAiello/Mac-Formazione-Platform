@@ -9,7 +9,7 @@ public class MeleeEnemy : Enemy
     public override void OnPostStart()
     {
         //
-        _triggerMeleeAttack.Init(InternalEnemyData.MeleeDamage);
+        _triggerMeleeAttack.Init(this, InternalEnemyData.MeleeDamage);
         _triggerMeleeAttack.gameObject.SetActive(false);
     }
 

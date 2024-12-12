@@ -44,6 +44,8 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
     //
     public Rigidbody2D InternalRigidbody => _rb;
     public EnemyData InternalEnemyData => _enemyData;
+    public bool IsDead => _isDeath;
+    public bool IsAlive => _currentHP > 0;
     public bool IsKnockable => _enemyData.IsKnockable;
     public float KnockBackForce => _enemyData.KnockBackForce;
     public float KnockBackTime => _enemyData.KnockBackTime;

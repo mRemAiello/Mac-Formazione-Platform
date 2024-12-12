@@ -147,7 +147,7 @@ public class PlayerController : Singleton<PlayerController>
         TriggerMeleeAttack triggerMeleeAttack = _triggerMeleeAttackGameObject.GetComponent<TriggerMeleeAttack>();
 
         // TODO: Applicare i modificatori del danno
-        triggerMeleeAttack?.Init(_playerData.AttackDamage);
+        triggerMeleeAttack?.Init(PlayerLifeManager.Instance, _playerData.AttackDamage);
 
         //
         ChangeState(PlayerStates.Attack);
