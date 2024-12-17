@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class PlayerController : Singleton<PlayerController>
+public class PlayerController : Singleton<PlayerController>, IDamageable
 {
     [Header("Data")]
     [SerializeField] private PlayerMovementData _playerData;
@@ -11,12 +13,33 @@ public class PlayerController : Singleton<PlayerController>
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Animator _animator;
 
-    [Header("Ground")]    
+    [Header("Ground")]
     [SerializeField] private Transform _groundCheck; // Oggetto che verifica il contatto con il terreno  
 
     [Header("Attack")]
     [SerializeField] private Transform _attackColliderPosition;
     [SerializeField] private GameObject _attackCollider;
+
+    [Header("Dead Animation")]
+    [SerializeField] private float _deadAnimationTime;
+    [SerializeField] private float _fadeAnimationTime;
+
+    //
+    private float _currentHP;
+    public float maxHP;
+    private float damagePerSecond = 0;
+    private float seconds = 0;
+
+    public float hpFillSpeed;
+    public float yellowHpFillSpeed;
+
+    //
+    public bool IsDead => _currentHP <= 0;
+    public bool IsAlive => _currentHP > 0;
+
+    // TODO: Event System
+    public Slider hpSlider;
+    public Slider fillHpSlider;
 
     //
     private PlayerStates _playerState = PlayerStates.Idle;
@@ -39,10 +62,38 @@ public class PlayerController : Singleton<PlayerController>
     void Start()
     {
         _standardGravityScale = _rb.gravityScale;
+
+        //
+        _currentHP = maxHP;
+
+        //
+        hpSlider.minValue = 0;
+        fillHpSlider.minValue = 0;
+        hpSlider.maxValue = maxHP;
+        fillHpSlider.maxValue = maxHP;
+        hpSlider.value = _currentHP;
+        fillHpSlider.value = _currentHP;
     }
 
     void Update()
     {
+        if (IsDead)
+            return;
+
+        //
+        if (seconds > 0)
+        {
+            TakeDamage(damagePerSecond * Time.deltaTime);
+            seconds -= Time.deltaTime;
+        }
+
+        //
+        float target = Mathf.Lerp(hpSlider.value, _currentHP, hpFillSpeed * Time.deltaTime);
+        float targetEffect = Mathf.Lerp(fillHpSlider.value, _currentHP, yellowHpFillSpeed * Time.deltaTime);
+
+        hpSlider.value = target;
+        fillHpSlider.value = targetEffect;
+
         // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
         _moveInputHorizontal = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
@@ -50,7 +101,7 @@ public class PlayerController : Singleton<PlayerController>
 
         // Muovi
         Move();
-     
+
         //
         if (Input.GetKey(KeyCode.E))
         {
@@ -60,6 +111,10 @@ public class PlayerController : Singleton<PlayerController>
 
     private void LateUpdate()
     {
+        //
+        if (IsDead)
+            return;
+
         // Controlla le condizioni di salto
         CheckJump();
 
@@ -83,7 +138,7 @@ public class PlayerController : Singleton<PlayerController>
     {
         if (_playerOrientation == CharacterOrientation.Left)
         {
-            transform.localScale = new Vector3(-1, 1, 1);  
+            transform.localScale = new Vector3(-1, 1, 1);
         }
         else
         {
@@ -115,7 +170,7 @@ public class PlayerController : Singleton<PlayerController>
             _rb.velocity = new Vector2(0, _rb.velocity.y);
             return;
         }
-        
+
         // Movimento del rigidbody impostando la velocità
         _rb.velocity = new Vector2(_moveInputHorizontal * _playerData.MoveSpeed * _slowSpeed, _rb.velocity.y);
         if (_rb.velocity.x > 0)
@@ -146,7 +201,7 @@ public class PlayerController : Singleton<PlayerController>
         TriggerMeleeAttack triggerMeleeAttack = _triggerMeleeAttackGameObject.GetComponent<TriggerMeleeAttack>();
 
         // TODO: Applicare i modificatori del danno
-        triggerMeleeAttack?.Init(PlayerLifeManager.Instance, _playerData.AttackDamage);
+        triggerMeleeAttack?.Init(this, _playerData.AttackDamage);
 
         //
         ChangeState(PlayerStates.Attack);
@@ -240,7 +295,7 @@ public class PlayerController : Singleton<PlayerController>
         {
             if (_playerState != PlayerStates.Attack)
                 ChangeState(PlayerStates.Idle);
-            
+
             // Resetta il numero di salti
             _jumpCount = 0;
             _jumpTime = 0;
@@ -318,6 +373,54 @@ public class PlayerController : Singleton<PlayerController>
     public void ChangeState(PlayerStates state)
     {
         _playerState = state;
+    }
+
+    public void AddDamagePerSecond(float damage, float seconds)
+    {
+        damagePerSecond = damage;
+        this.seconds = seconds;
+    }
+
+    public void RemoveDamagePerSecond()
+    {
+        damagePerSecond = 0;
+        seconds = 0;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        _currentHP -= damage;
+        if (_currentHP <= 0)
+        {
+            _currentHP = 0;
+            Death();
+        }
+
+        // TODO: Aggiornare UI (Eventi)
+    }
+
+    private void Death()
+    {
+        _animator.SetBool("Dead", true);
+
+        //
+        Invoke(nameof(Fade), _deadAnimationTime);
+    }
+
+    private void Fade()
+    {
+        // Dissolvenza a nero
+        FadeToBlack.Instance.StartFade();
+
+        //
+        Invoke(nameof(Respawn), _fadeAnimationTime);
+    }
+
+    private void Respawn()
+    {
+        //
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 
     void OnDrawGizmos()

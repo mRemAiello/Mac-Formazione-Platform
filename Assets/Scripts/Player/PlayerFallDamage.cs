@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class PlayerFallDamage : MonoBehaviour
 {
-    [SerializeField] private PlayerLifeManager _playerLife;
-    [SerializeField] private PlayerController _playerMovement;
     [SerializeField] private float _fallThreshold = 40f;
     [SerializeField] private float _damage;
     [SerializeField] private float _damageMultiplier = 1;
@@ -15,7 +13,7 @@ public class PlayerFallDamage : MonoBehaviour
     private void LateUpdate()
     {
         //
-        if (_playerMovement.IsGrounded() && _isFalling)
+        /*if (_playerMovement.IsGrounded() && _isFalling)
         {
             _lastY = _firstY - transform.position.y;
              Debug.Log("Last Y: " + _lastY);
@@ -37,6 +35,6 @@ public class PlayerFallDamage : MonoBehaviour
             _firstY = transform.position.y;
             Debug.Log("First Y: " + _firstY);
             _isFalling = true;
-        }
+        }*/
     }
 }

@@ -14,7 +14,7 @@ public class Poison : MonoBehaviour
     {
         if (other.gameObject.tag.Equals(playerTag))
         {
-            PlayerLifeManager.Instance.RemoveDamagePerSecond();
+            PlayerController.Instance.RemoveDamagePerSecond();
             PlayerController.Instance.Slow(slowVelocity, slowJumpSpeed);
         }
     }
@@ -24,7 +24,7 @@ public class Poison : MonoBehaviour
         if (other.gameObject.tag.Equals(playerTag))
         {
             PlayerController.Instance.RemoveSlow();
-            PlayerLifeManager.Instance.AddDamagePerSecond(damagePerSecond, seconds);
+            PlayerController.Instance.AddDamagePerSecond(damagePerSecond, seconds);
         }
     }
 
@@ -33,8 +33,8 @@ public class Poison : MonoBehaviour
         if (other.gameObject.tag.Equals(playerTag))
         {
             PlayerController.Instance.Slow(slowVelocity, slowJumpSpeed);
-            PlayerLifeManager.Instance.RemoveDamagePerSecond();
-            PlayerLifeManager.Instance.TakeDamage(damagePerSecond * Time.deltaTime);
+            PlayerController.Instance.RemoveDamagePerSecond();
+            PlayerController.Instance.TakeDamage(damagePerSecond * Time.deltaTime);
         }
     }
 }
