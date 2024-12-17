@@ -29,6 +29,21 @@ public class Inventory : MonoBehaviour
         return null;
     }
 
+    public int IndexOf(ItemData itemData)
+    {
+        int i = 0;
+        foreach (ItemWithAmount itemWithAmount in _items)
+        {
+            if (itemWithAmount.ItemData == itemData)
+            {
+                return i;
+            }
+            i++;
+        }
+
+        return -1;
+    }
+
     public void AddToInventory(ItemData item, int amount = 1)
     {
         ItemWithAmount itemWithAmount = Find(item);
@@ -52,5 +67,22 @@ public class Inventory : MonoBehaviour
 
         //
         itemWithAmount.Amount = Mathf.Min(itemWithAmount.Amount, item.Max);
+    }
+
+    public void RemoveFromInventory(ItemData item, int amount)
+    {
+        ItemWithAmount itemWithAmount = Find(item);
+        if (itemWithAmount != null)
+        {
+            int index = IndexOf(item);
+            if (index != -1)
+            {
+                _items[index].Amount -= amount;
+                if (_items[index].Amount < 0)
+                {
+                    _items[index].Amount = 0;
+                }
+            }
+        }
     }
 }

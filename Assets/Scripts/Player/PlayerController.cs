@@ -1,4 +1,5 @@
 using System;
+using GameUtils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
 {
     [Header("Data")]
     [SerializeField] private PlayerMovementData _playerData;
+    [SerializeField] private VoidEventAsset _onPlayerDamaged;
 
     [Header("Components")]
     [SerializeField] private Rigidbody2D _rb;
@@ -30,16 +32,10 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     private float damagePerSecond = 0;
     private float seconds = 0;
 
-    public float hpFillSpeed;
-    public float yellowHpFillSpeed;
-
     //
+    public float CurrentHP => _currentHP;
     public bool IsDead => _currentHP <= 0;
     public bool IsAlive => _currentHP > 0;
-
-    // TODO: Event System
-    public Slider hpSlider;
-    public Slider fillHpSlider;
 
     //
     private PlayerStates _playerState = PlayerStates.Idle;
@@ -65,14 +61,6 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
 
         //
         _currentHP = maxHP;
-
-        //
-        hpSlider.minValue = 0;
-        fillHpSlider.minValue = 0;
-        hpSlider.maxValue = maxHP;
-        fillHpSlider.maxValue = maxHP;
-        hpSlider.value = _currentHP;
-        fillHpSlider.value = _currentHP;
     }
 
     void Update()
@@ -86,13 +74,6 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
             TakeDamage(damagePerSecond * Time.deltaTime);
             seconds -= Time.deltaTime;
         }
-
-        //
-        float target = Mathf.Lerp(hpSlider.value, _currentHP, hpFillSpeed * Time.deltaTime);
-        float targetEffect = Mathf.Lerp(fillHpSlider.value, _currentHP, yellowHpFillSpeed * Time.deltaTime);
-
-        hpSlider.value = target;
-        fillHpSlider.value = targetEffect;
 
         // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
@@ -396,7 +377,16 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
             Death();
         }
 
-        // TODO: Aggiornare UI (Eventi)
+        //
+        _onPlayerDamaged?.Invoke();
+    }
+
+    public void RestoreHP()
+    {
+        _currentHP = maxHP;
+
+        //
+        _onPlayerDamaged?.Invoke();
     }
 
     private void Death()
