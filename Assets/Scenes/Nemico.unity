@@ -1218,6 +1218,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5725658204876133071, guid: 52d31ff08132d7a46bdb33b0a1be20be, type: 3}
+      propertyPath: hpSlider
+      value: 
+      objectReference: {fileID: 183320147}
+    - target: {fileID: 5725658204876133071, guid: 52d31ff08132d7a46bdb33b0a1be20be, type: 3}
+      propertyPath: fillHpSlider
+      value: 
+      objectReference: {fileID: 183320146}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
