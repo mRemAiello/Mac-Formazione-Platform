@@ -20,7 +20,7 @@ public class PlayerRestoreHP : MagicBase
 
         //
         var item = PlayerInventory.Instance.Find(ManaData);
-        if (Input.GetKeyDown(KeyCode.U) && item.Amount >= ManaNeeded)
+        if (Input.GetKeyDown(KeyCode.U) && item!= null && item.Amount >= ManaNeeded)
         {
             LaunchMagic();
         }

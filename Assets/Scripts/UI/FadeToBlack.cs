@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using GameUtils;
 using UnityEngine;
 
 public class FadeToBlack : Singleton<FadeToBlack>
@@ -21,13 +22,16 @@ public class FadeToBlack : Singleton<FadeToBlack>
         FadeToWhite();
     }
 
-    public void StartFade()
+    public void StartFade(Action onFadeComplete = null)
     {
         //
         _canvasGroup.alpha = 0;
 
         //
-        _canvasGroup.DOFade(1, _fadeOutSpeed).SetEase(_fadeOutCurve);
+        _canvasGroup.DOFade(1, _fadeOutSpeed).SetEase(_fadeOutCurve).onComplete += () =>
+        {
+            onFadeComplete?.Invoke();
+        };
     }
 
     private void FadeToWhite()
