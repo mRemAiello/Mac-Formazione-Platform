@@ -1,5 +1,7 @@
 using System;
 using GameUtils;
+using Terresquall;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -52,6 +54,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     private float _slowSpeed = 1;
     private float _coyoteTimeCounter = 0;
     private float _jumpBufferCounter = 0;
+    private bool _jumpButtonPressed = false;
     private GameObject _triggerMeleeAttackGameObject;
 
     //
@@ -77,8 +80,20 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
 
         // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
-        _moveInputHorizontal = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
-        _moveInputVertical = Input.GetAxisRaw("Vertical");
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            _moveInputHorizontal = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
+            _moveInputVertical = Input.GetAxisRaw("Vertical");
+        }
+        else
+        {
+            //
+            if (VirtualJoystick.Instance != null)
+            {
+                _moveInputHorizontal = VirtualJoystick.Instance.GetAxisRaw("Horizontal");
+                _moveInputVertical = VirtualJoystick.Instance.GetAxisRaw("Vertical");
+            }
+        }
 
         // Muovi
         Move();
@@ -95,6 +110,9 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         //
         if (IsDead)
             return;
+
+        //
+        CheckJumpInput();
 
         // Controlla le condizioni di salto
         CheckJump();
@@ -166,7 +184,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         }
     }
 
-    private void Attack()
+    public void Attack()
     {
         if (_playerState == PlayerStates.Attack)
             return;
@@ -199,6 +217,20 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         Destroy(_triggerMeleeAttackGameObject);
     }
 
+    private void CheckJumpInput()
+    {
+        _jumpButtonPressed = false;
+        if (Input.GetButtonDown("Jump"))
+        {
+            _jumpButtonPressed = true;
+        }
+    }
+
+    public void JumpButtonPressed()
+    {
+        _jumpButtonPressed = true;
+    }
+
     private void CheckJump()
     {
         // 
@@ -216,7 +248,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         }
 
         // Jump Buffering
-        if (Input.GetButtonDown("Jump"))
+        if (_jumpButtonPressed)
         {
             _jumpBufferCounter = _playerData.JumpBufferTime;
         }
@@ -241,7 +273,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
             // TODO: Spawn del fumo, cambio animazione, suono
         }
         // Doppio salto
-        else if (Input.GetButtonDown("Jump") && !IsGrounded() && _jumpCount < _playerData.MaxJumps && _playerState != PlayerStates.Attack)
+        else if (_jumpButtonPressed && !IsGrounded() && _jumpCount < _playerData.MaxJumps && _playerState != PlayerStates.Attack)
         {
             //Debug.Log("Doppio salto");
             ChangeState(PlayerStates.Jump);
