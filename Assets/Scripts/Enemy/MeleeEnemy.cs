@@ -6,6 +6,10 @@ public class MeleeEnemy : Enemy
 {
     [SerializeField] private TriggerMeleeAttack _triggerMeleeAttack;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip _attackClip;
+    [SerializeField] private GameObject _audioSourcePrefab;
+
     public override void OnPostStart()
     {
         //
@@ -35,6 +39,11 @@ public class MeleeEnemy : Enemy
 
             // TODO: Eventualmente scegli tra gli attacchi, con un intero che cambia l'attacco nell'Animator
             IsAttacking = true;
+
+            //
+            GameObject audioSource = Instantiate(_audioSourcePrefab, transform.position, Quaternion.identity);
+            audioSource.GetComponent<AudioSource>().clip = _attackClip;
+            audioSource.GetComponent<AudioSource>().Play();
         }
     }
 

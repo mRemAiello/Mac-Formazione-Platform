@@ -6,6 +6,7 @@ public class UIAttackManager : MonoBehaviour
 {
     [SerializeField] private Button _attackButton;
     [SerializeField] private Button _jumpButton;
+    private Image _image;
 
     private void Awake()
     {

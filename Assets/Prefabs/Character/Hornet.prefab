@@ -320,6 +320,8 @@ MonoBehaviour:
   _groundCheck: {fileID: 2851443266975678397}
   _attackColliderPosition: {fileID: 3320627814582520765}
   _attackCollider: {fileID: 4804492481683612129, guid: 49e8e76c9e89c044aa8eb5dda1380ce1, type: 3}
+  _attackClip: {fileID: 8300000, guid: dd9f23d5fee02ce439df390fccdf3412, type: 3}
+  _audioSourcePrefab: {fileID: 7295409977947624527, guid: 69e4fcf7690a0624baaec8880d28a009, type: 3}
   _deadAnimationTime: 0
   _fadeAnimationTime: 0
   maxHP: 200

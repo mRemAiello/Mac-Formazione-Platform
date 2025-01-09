@@ -451,6 +451,8 @@ MonoBehaviour:
   _yellowHpFillSpeed: 2.5
   _smokeVFX: {fileID: 1025285306637258, guid: d8f0099df63275647a8bcf646df1ca00, type: 3}
   _triggerMeleeAttack: {fileID: 3965397904311664753}
+  _attackClip: {fileID: 8300000, guid: 58f77f394069e484e965fae0bd32623d, type: 3}
+  _audioSourcePrefab: {fileID: 7295409977947624527, guid: 69e4fcf7690a0624baaec8880d28a009, type: 3}
 --- !u!1 &3534513002885191149
 GameObject:
   m_ObjectHideFlags: 0

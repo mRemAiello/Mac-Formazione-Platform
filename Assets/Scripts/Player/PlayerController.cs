@@ -1,4 +1,5 @@
 using System;
+using GamePix;
 using GameUtils;
 using Terresquall;
 using UnityEditor.UI;
@@ -23,6 +24,8 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     [Header("Attack")]
     [SerializeField] private Transform _attackColliderPosition;
     [SerializeField] private GameObject _attackCollider;
+    [SerializeField] private AudioClip _attackClip;
+    [SerializeField] private GameObject _audioSourcePrefab;
 
     [Header("Dead Animation")]
     [SerializeField] private float _deadAnimationTime;
@@ -80,26 +83,38 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
 
         // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)
         // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
-        if (SystemInfo.deviceType == DeviceType.Desktop)
+        float moveInputHorizontalDesktop = Input.GetAxisRaw("Horizontal");
+        float moveInputVerticalDesktop = Input.GetAxisRaw("Vertical");
+        float moveInputHorizontalMobile = 0;
+        float moveInputVerticalMobile = 0;
+
+        if (VirtualJoystick.Instance != null)
         {
-            _moveInputHorizontal = Input.GetAxisRaw("Horizontal"); // Raccoglie l'input orizzontale (-1, 0, 1)
-            _moveInputVertical = Input.GetAxisRaw("Vertical");
+            moveInputHorizontalMobile = VirtualJoystick.Instance.GetAxisRaw("Horizontal");
+            moveInputVerticalMobile = VirtualJoystick.Instance.GetAxisRaw("Vertical");
         }
+
+        Debug.Log(moveInputVerticalDesktop);
+        Debug.Log(moveInputHorizontalMobile);
+
+        //
+        if (moveInputHorizontalDesktop != 0)
+            _moveInputHorizontal = moveInputHorizontalDesktop;
         else
-        {
-            //
-            if (VirtualJoystick.Instance != null)
-            {
-                _moveInputHorizontal = VirtualJoystick.Instance.GetAxisRaw("Horizontal");
-                _moveInputVertical = VirtualJoystick.Instance.GetAxisRaw("Vertical");
-            }
-        }
+            _moveInputHorizontal = moveInputHorizontalMobile;
+
+        //
+        if (moveInputVerticalDesktop != 0)
+            _moveInputVertical = moveInputVerticalDesktop;
+        else
+            _moveInputVertical = moveInputVerticalMobile;
+
 
         // Muovi
         Move();
 
         //
-        if (Input.GetKey(KeyCode.E))
+        if (!Application.isMobilePlatform && Input.GetKey(KeyCode.E))
         {
             Attack();
         }
@@ -201,6 +216,11 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
 
         // TODO: Applicare i modificatori del danno
         triggerMeleeAttack?.Init(this, _playerData.AttackDamage);
+
+        //
+        GameObject audioSource = Instantiate(_audioSourcePrefab, _attackColliderPosition.position, Quaternion.identity);
+        audioSource.GetComponent<AudioSource>().clip = _attackClip;
+        audioSource.GetComponent<AudioSource>().Play();
 
         //
         ChangeState(PlayerStates.Attack);
@@ -435,10 +455,22 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         FadeToBlack.Instance.StartFade();
 
         //
-        Invoke(nameof(Respawn), _fadeAnimationTime);
+        Invoke(nameof(ShowAds), _fadeAnimationTime);
     }
 
-    private void Respawn()
+    void ShowAds()
+    {
+        // show interstital ads
+        Gpx.Ads.InterstitialAd(OnInterstitalAdSuccess);
+    }
+
+    [AOT.MonoPInvokeCallback(typeof(Gpx.gpxCallback))]
+    public static void OnInterstitalAdSuccess()
+    {
+        Instance.Respawn();
+    }
+
+    public void Respawn()
     {
         //
         Scene currentScene = SceneManager.GetActiveScene();
