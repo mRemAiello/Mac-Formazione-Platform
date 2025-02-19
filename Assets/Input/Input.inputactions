@@ -9,7 +9,7 @@
                     "name": "Move",
                     "type": "Value",
                     "id": "2ac0ff9e-64bd-4867-9ccf-e6bcda389467",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -18,7 +18,7 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "30ae85e5-2ba5-4bbd-9a91-6bf2fa938724",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -27,7 +27,7 @@
                     "name": "Attack",
                     "type": "Button",
                     "id": "55aa5ed2-a0b2-4c1d-b6e7-187e02e55971",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -181,61 +181,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Xbox Stick",
-                    "id": "b864d5ae-3bae-4682-acc5-4a8b5e434503",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "57e3064f-38e9-4bb6-88c6-2083aaadb9c8",
-                    "path": "<Gamepad>/leftStick/up",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "ff5f4ecc-dd30-4a3d-9b79-bbc4734799ec",
-                    "path": "<Gamepad>/leftStick/down",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "b0d096fb-1cdc-41dd-b705-596eaafbec70",
-                    "path": "<Gamepad>/leftStick/left",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "f77c6f7f-891c-442b-b661-95243656633a",
-                    "path": "<Gamepad>/leftStick/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "Xbox Arrow",
                     "id": "04a4f72b-6394-4e20-937b-efbfc0d0f043",
                     "path": "2DVector",
@@ -289,6 +234,17 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "fb41fa20-4e8c-4736-891a-eb1eb400ae80",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",

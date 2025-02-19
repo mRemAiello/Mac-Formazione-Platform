@@ -1,7 +1,6 @@
 using System;
 using GamePix;
 using GameUtils;
-using Terresquall;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -88,36 +87,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         float moveInputHorizontalMobile = 0;
         float moveInputVerticalMobile = 0;
 
-        if (VirtualJoystick.Instance != null)
-        {
-            moveInputHorizontalMobile = VirtualJoystick.Instance.GetAxisRaw("Horizontal");
-            moveInputVerticalMobile = VirtualJoystick.Instance.GetAxisRaw("Vertical");
-        }
 
-        Debug.Log(moveInputVerticalDesktop);
-        Debug.Log(moveInputHorizontalMobile);
-
-        //
-        if (moveInputHorizontalDesktop != 0)
-            _moveInputHorizontal = moveInputHorizontalDesktop;
-        else
-            _moveInputHorizontal = moveInputHorizontalMobile;
-
-        //
-        if (moveInputVerticalDesktop != 0)
-            _moveInputVertical = moveInputVerticalDesktop;
-        else
-            _moveInputVertical = moveInputVerticalMobile;
-
-
-        // Muovi
-        Move();
-
-        //
-        if (!Application.isMobilePlatform && Input.GetKey(KeyCode.E))
-        {
-            Attack();
-        }
     }
 
     private void LateUpdate()
