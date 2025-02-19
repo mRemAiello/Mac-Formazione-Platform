@@ -39,7 +39,7 @@ public class RangedEnemy : Enemy
         DistanceToEnemy = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
         if (DistanceToEnemy <= InternalEnemyData.RangedAttackRange)
         {
-            InternalRigidbody.velocity = Vector2.zero;
+            InternalRigidbody.linearVelocity = Vector2.zero;
 
             // TODO: Eventualmente scegli tra gli attacchi, con un intero che cambia l'attacco nell'Animator
             IsRangedAttacking = true;

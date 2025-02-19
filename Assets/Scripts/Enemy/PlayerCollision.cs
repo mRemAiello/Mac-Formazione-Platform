@@ -22,7 +22,7 @@ public class PlayerCollision : MonoBehaviour
             Vector2 knockBackDirection = (transform.position - collision.transform.position).normalized;
 
             // Applica la forza di rimbalzo
-            rb.velocity = knockBackDirection * knockBackForce;
+            rb.linearVelocity = knockBackDirection * knockBackForce;
 
             // Puoi anche usare un Coroutine per gestire il knockback
             StartCoroutine(ResetVelocityAfterTime());
@@ -35,6 +35,6 @@ public class PlayerCollision : MonoBehaviour
         yield return new WaitForSeconds(knockBackDuration);
 
         // Resetta la velocità del rigidbody
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
     }
 }

@@ -169,7 +169,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         // Debug.Log(groundedByCollision + " - " + Mathf.Abs(_rb.velocity.y));
 
         // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
-        if (groundedByCollision && Mathf.Abs(_rb.velocity.y) <= _playerData.VelocityThreshold)
+        if (groundedByCollision && Mathf.Abs(_rb.linearVelocity.y) <= _playerData.VelocityThreshold)
         {
             return true;
         }
@@ -181,18 +181,18 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     {
         if (_playerState == PlayerStates.Attack)
         {
-            _rb.velocity = new Vector2(0, _rb.velocity.y);
+            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
             return;
         }
 
         // Movimento del rigidbody impostando la velocità
-        _rb.velocity = new Vector2(_moveInputHorizontal * _playerData.MoveSpeed * _slowSpeed, _rb.velocity.y);
-        if (_rb.velocity.x > 0)
+        _rb.linearVelocity = new Vector2(_moveInputHorizontal * _playerData.MoveSpeed * _slowSpeed, _rb.linearVelocity.y);
+        if (_rb.linearVelocity.x > 0)
         {
             _playerOrientation = CharacterOrientation.Right;
             Flip();
         }
-        else if (_rb.velocity.x < 0)
+        else if (_rb.linearVelocity.x < 0)
         {
             _playerOrientation = CharacterOrientation.Left;
             Flip();
@@ -282,7 +282,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         {
             //Debug.Log("Primo salto");
             ChangeState(PlayerStates.Jump);
-            _rb.velocity = new Vector2(_rb.velocity.x, _playerData.JumpForce * _slowJumpSpeed);
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _playerData.JumpForce * _slowJumpSpeed);
 
             // Incrementa il numero di salti
             _jumpCount++;
@@ -297,7 +297,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         {
             //Debug.Log("Doppio salto");
             ChangeState(PlayerStates.Jump);
-            _rb.velocity = new Vector2(_rb.velocity.x, _playerData.DoubleJumpForce * _slowJumpSpeed);
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _playerData.DoubleJumpForce * _slowJumpSpeed);
 
             // Incrementa il numero di salti
             _jumpCount++;
@@ -307,10 +307,10 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         }
 
         // Coyote Time
-        if (Input.GetButtonUp("Jump") && _rb.velocity.y > 0f && _jumpCount <= 1)
+        if (Input.GetButtonUp("Jump") && _rb.linearVelocity.y > 0f && _jumpCount <= 1)
         {
             //Debug.Log("Coyote Time" + _jumpCount);
-            _rb.velocity = new Vector2(_rb.velocity.x, _rb.velocity.y * 0.5f);
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _rb.linearVelocity.y * 0.5f);
             _coyoteTimeCounter = 0;
         }
 
@@ -377,16 +377,16 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     private void UpdateAnimator()
     {
         //
-        _animator.SetFloat("XVelocity", Math.Abs(_rb.velocity.x));
+        _animator.SetFloat("XVelocity", Math.Abs(_rb.linearVelocity.x));
         _animator.SetBool("IsJumping", _playerState == PlayerStates.Jump);
         _animator.SetBool("IsSlowed", _isSlowed);
     }
 
     private void ClampVelocity2D()
     {
-        float clampedX = Mathf.Clamp(_rb.velocity.x, _playerData.MinXVelocity, _playerData.MaxXVelocity);
-        float clampedY = Mathf.Clamp(_rb.velocity.y, _playerData.MinYVelocity, _playerData.MaxYVelocity);
-        _rb.velocity = new Vector2(clampedX, clampedY);
+        float clampedX = Mathf.Clamp(_rb.linearVelocity.x, _playerData.MinXVelocity, _playerData.MaxXVelocity);
+        float clampedY = Mathf.Clamp(_rb.linearVelocity.y, _playerData.MinYVelocity, _playerData.MaxYVelocity);
+        _rb.linearVelocity = new Vector2(clampedX, clampedY);
     }
 
     public void Slow(float slowSpeed, float slowJumpSpeed)

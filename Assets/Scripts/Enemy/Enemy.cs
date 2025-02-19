@@ -81,7 +81,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         //
         if (_isDeath)
         {
-            _rb.velocity = Vector3.zero;
+            _rb.linearVelocity = Vector3.zero;
             return;
         }
 
@@ -156,11 +156,11 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         // TODO: Controllare sotto di lui se c'è un burrone
         if (_currentPoint == _pointB.transform)
         {
-            _rb.velocity = new Vector2(_enemyData.WalkSpeed, 0);
+            _rb.linearVelocity = new Vector2(_enemyData.WalkSpeed, 0);
         }
         else
         {
-            _rb.velocity = new Vector2(-_enemyData.WalkSpeed, 0);
+            _rb.linearVelocity = new Vector2(-_enemyData.WalkSpeed, 0);
         }
 
         //
@@ -178,7 +178,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
     protected void Turn()
     {
         //
-        _rb.velocity = Vector2.zero;
+        _rb.linearVelocity = Vector2.zero;
 
         //
         float timeToLaunch = Random.Range(_enemyData.TurnAnimationDurationMin, _enemyData.TurnAnimationDurationMax);
@@ -267,7 +267,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
             {
                 Flip();
             }
-            _rb.velocity = new Vector2(-_enemyData.RunSpeed, 0);
+            _rb.linearVelocity = new Vector2(-_enemyData.RunSpeed, 0);
         }
         else
         {
@@ -275,7 +275,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
             {
                 Flip();
             }
-            _rb.velocity = new Vector2(_enemyData.RunSpeed, 0);
+            _rb.linearVelocity = new Vector2(_enemyData.RunSpeed, 0);
         }
     }
 
@@ -321,7 +321,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 
         //
         _forceDisable = true;
-        _rb.velocity = Vector2.zero;
+        _rb.linearVelocity = Vector2.zero;
 
         //
         Invoke(nameof(ResetToStartPosition), _enemyData.ResetTime);
@@ -344,7 +344,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
     private void UpdateAnimator()
     {
         //
-        _animator.SetFloat("XVelocity", Mathf.Abs(_rb.velocity.x));
+        _animator.SetFloat("XVelocity", Mathf.Abs(_rb.linearVelocity.x));
         _animator.SetBool("EnemyInSight", _enemyInSight);
         _animator.SetBool("IsAttacking", IsAttacking);
         _animator.SetBool("IsRangedAttacking", IsRangedAttacking);
@@ -370,7 +370,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         _animator.SetBool("Death", _isDeath);
 
         // Disattivo collider e rigidbody
-        _rb.velocity = Vector3.zero;
+        _rb.linearVelocity = Vector3.zero;
         _rb.isKinematic = true;
         _enemyCollider.enabled = false;
 
@@ -400,7 +400,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 
         //
         Vector2 direction = (transform.position - enemyTransform.position).normalized;
-        _rb.velocity = direction * knockBackForce;
+        _rb.linearVelocity = direction * knockBackForce;
     }
 
     private IEnumerator StunTimer(float knockBackTime, float stunForce)
@@ -408,7 +408,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         yield return new WaitForSeconds(knockBackTime);
 
         //
-        _rb.velocity = Vector3.zero;
+        _rb.linearVelocity = Vector3.zero;
 
         //
         yield return new WaitForSeconds(stunForce);
