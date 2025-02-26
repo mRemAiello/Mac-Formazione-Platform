@@ -61,4 +61,6 @@ public class PlayerMovementData : ScriptableObject
     public int MaxJumps => _maxJumps;
     public float AttackDamage => _attackDamage;
     public float AttackDelay => _attackDelay;
+
+    public float InteractionRange;
 }

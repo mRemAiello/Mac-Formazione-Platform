@@ -35,3 +35,4 @@ MonoBehaviour:
   _maxYVelocity: 20
   _attackDamage: 30
   _attackDelay: 1
+  InteractionRange: 1

@@ -63,7 +63,16 @@
                     "name": "Magic 4",
                     "type": "Button",
                     "id": "8c880add-31e2-411d-8ebb-e48e40949181",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Upgrade",
+                    "type": "Button",
+                    "id": "77345265-6263-4936-b2f9-318678364eb0",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -375,6 +384,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Magic 4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "714ffffb-72e7-4c76-8b19-377508104c5b",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Upgrade",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

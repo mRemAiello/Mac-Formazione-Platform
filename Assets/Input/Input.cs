@@ -149,7 +149,16 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""Magic 4"",
                     ""type"": ""Button"",
                     ""id"": ""8c880add-31e2-411d-8ebb-e48e40949181"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Upgrade"",
+                    ""type"": ""Button"",
+                    ""id"": ""77345265-6263-4936-b2f9-318678364eb0"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -463,6 +472,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Magic 4"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""714ffffb-72e7-4c76-8b19-377508104c5b"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Upgrade"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -546,6 +566,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Magic2 = m_Player.FindAction("Magic 2", throwIfNotFound: true);
         m_Player_Magic3 = m_Player.FindAction("Magic 3", throwIfNotFound: true);
         m_Player_Magic4 = m_Player.FindAction("Magic 4", throwIfNotFound: true);
+        m_Player_Upgrade = m_Player.FindAction("Upgrade", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_NextItem = m_UI.FindAction("Next Item", throwIfNotFound: true);
@@ -639,6 +660,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Magic2;
     private readonly InputAction m_Player_Magic3;
     private readonly InputAction m_Player_Magic4;
+    private readonly InputAction m_Player_Upgrade;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -678,6 +700,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Magic4".
         /// </summary>
         public InputAction @Magic4 => m_Wrapper.m_Player_Magic4;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Upgrade".
+        /// </summary>
+        public InputAction @Upgrade => m_Wrapper.m_Player_Upgrade;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -725,6 +751,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Magic4.started += instance.OnMagic4;
             @Magic4.performed += instance.OnMagic4;
             @Magic4.canceled += instance.OnMagic4;
+            @Upgrade.started += instance.OnUpgrade;
+            @Upgrade.performed += instance.OnUpgrade;
+            @Upgrade.canceled += instance.OnUpgrade;
         }
 
         /// <summary>
@@ -757,6 +786,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Magic4.started -= instance.OnMagic4;
             @Magic4.performed -= instance.OnMagic4;
             @Magic4.canceled -= instance.OnMagic4;
+            @Upgrade.started -= instance.OnUpgrade;
+            @Upgrade.performed -= instance.OnUpgrade;
+            @Upgrade.canceled -= instance.OnUpgrade;
         }
 
         /// <summary>
@@ -964,6 +996,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMagic4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Upgrade" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUpgrade(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
