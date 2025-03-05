@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TriggerMeleeAttack : MonoBehaviour
 {
-    [SerializeField] private string _enemyTag;
+    [SerializeField] private string[] _enemyTag;
 
     //
     private IDamageable _sourceDamage;
@@ -22,7 +22,18 @@ public class TriggerMeleeAttack : MonoBehaviour
             return;
 
         //
-        if (!other.gameObject.tag.Equals(_enemyTag))
+        bool isCorrectTag = false;
+        foreach (string tag in _enemyTag)
+        {
+            if (other.gameObject.tag.Equals(tag))
+            {
+                isCorrectTag = true;
+                break;
+            }
+        }
+
+        //
+        if (!isCorrectTag)
             return;
 
         //

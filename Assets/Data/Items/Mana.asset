@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31afd804e3a41ab489a56fa48633d691, type: 3}
-  m_Name: Money
+  m_Name: Mana
   m_EditorClassIdentifier: 
   _itemPrefab: {fileID: 8115733599700948397, guid: 083e6bb750eecc74ea062677c3c51b80, type: 3}
   _itemSprite: {fileID: -937303950, guid: 8c5fc2639744d924fb80d91512aeec0d, type: 3}

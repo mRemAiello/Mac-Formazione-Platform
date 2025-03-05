@@ -18,7 +18,7 @@ public class UIAttackManager : MonoBehaviour
     {
         if (PlayerController.InstanceExists)
         {
-            PlayerController.Instance.JumpButtonPressed();
+            //PlayerController.Instance.JumpButtonPressed();
         }
     }
 
@@ -26,7 +26,7 @@ public class UIAttackManager : MonoBehaviour
     {
         if (PlayerController.InstanceExists)
         {
-            PlayerController.Instance.Attack();
+            //PlayerController.Instance.Attack();
         }
     }
 }

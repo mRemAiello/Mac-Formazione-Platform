@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec01c76d605e71844aecdd65c7f1b912, type: 3}
-  m_Name: Wall 3
+  m_Name: Wall 0
   m_EditorClassIdentifier: 
   NormalStructure: {fileID: 0}
-  Health: 20
-  Defence: 20
+  Health: 0
+  Defence: 10
   Attack: 0
   AttackRange: 0
-  DestroyedParticle: {fileID: 0}
+  IsFirstStructure: 1
+  DestroyedParticle: {fileID: 1547757601392324, guid: 6f672a31584a6a748912a49c1dce2f0c, type: 3}
   DamagedSprite: {fileID: 0}
-  ManaToRepair: 5
-  ManaToUpgrade: 15
-  Upgrade: {fileID: 0}
+  ManaToRepair: 0
+  ManaToUpgrade: 5
+  Upgrade: {fileID: 8688646257339612402, guid: 26a2162c404e7bd49a0b171d3bc66688, type: 3}

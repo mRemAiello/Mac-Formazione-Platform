@@ -136,7 +136,6 @@ GameObject:
   - component: {fileID: 7746420875518765173}
   - component: {fileID: 1462434421991166620}
   - component: {fileID: 2700560524879110879}
-  - component: {fileID: 5725658204876133071}
   - component: {fileID: 3385897596832890426}
   - component: {fileID: 6905001805289602492}
   m_Layer: 8
@@ -183,6 +182,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -204,8 +206,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -205416699
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: dde2d134025b9c140adad13518067274, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -226,6 +228,7 @@ CapsuleCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4803677909250019478}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -249,13 +252,14 @@ CapsuleCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: -0.2031442}
   m_Size: {x: 0.9874697, y: 2.183118}
   m_Direction: 0
 --- !u!50 &1462434421991166620
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -266,8 +270,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0.4
-  m_AngularDrag: 0.4
+  m_LinearDamping: 0.4
+  m_AngularDamping: 0.4
   m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -282,7 +286,7 @@ Rigidbody2D:
   m_Constraints: 4
 --- !u!95 &2700560524879110879
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -296,36 +300,12 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5725658204876133071
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4803677909250019478}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eff039933d3009145a96331d7b589915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playerData: {fileID: 11400000, guid: cb8a0fd49583f4b48b3c8d84385ef3ea, type: 2}
-  _onPlayerDamaged: {fileID: 11400000, guid: baca6b068c58ae14083e79d73aa499c6, type: 2}
-  _rb: {fileID: 1462434421991166620}
-  _spriteRenderer: {fileID: 3320250189704784128}
-  _animator: {fileID: 2700560524879110879}
-  _groundCheck: {fileID: 2851443266975678397}
-  _attackColliderPosition: {fileID: 3320627814582520765}
-  _attackCollider: {fileID: 4804492481683612129, guid: 49e8e76c9e89c044aa8eb5dda1380ce1, type: 3}
-  _attackClip: {fileID: 8300000, guid: dd9f23d5fee02ce439df390fccdf3412, type: 3}
-  _audioSourcePrefab: {fileID: 7295409977947624527, guid: 69e4fcf7690a0624baaec8880d28a009, type: 3}
-  _deadAnimationTime: 0
-  _fadeAnimationTime: 0
-  maxHP: 200
 --- !u!114 &3385897596832890426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,6 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerData: {fileID: 11400000, guid: cb8a0fd49583f4b48b3c8d84385ef3ea, type: 2}
+  _manaData: {fileID: 11400000, guid: 5ab07d99b5b263643993ab7cb6169ad4, type: 2}
   _onPlayerDamaged: {fileID: 11400000, guid: baca6b068c58ae14083e79d73aa499c6, type: 2}
   _rb: {fileID: 1462434421991166620}
   _spriteRenderer: {fileID: 3320250189704784128}
@@ -440,14 +421,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ComponentVersion: 1
+  m_ComponentVersion: 2
   m_LightType: 3
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.412
   m_Color: {r: 0.8792453, g: 0.74818796, b: 0.74818796, a: 1}
   m_Intensity: 4
   m_LightVolumeIntensity: 0
-  m_LightVolumeIntensityEnabled: 0
+  m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
@@ -457,8 +438,10 @@ MonoBehaviour:
   m_NormalMapDistance: 3
   m_NormalMapQuality: 2
   m_UseNormalMap: 0
-  m_ShadowIntensityEnabled: 0
+  m_ShadowsEnabled: 0
   m_ShadowIntensity: 0.309
+  m_ShadowSoftness: 0
+  m_ShadowSoftnessFalloffIntensity: 0.5
   m_ShadowVolumeIntensityEnabled: 1
   m_ShadowVolumeIntensity: 0.423
   m_LocalBounds:

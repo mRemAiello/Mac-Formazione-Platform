@@ -26,7 +26,7 @@ MonoBehaviour:
   _turnAnimationDurationMin: 1
   _turnAnimationDurationMax: 2
   _canMeleeAttack: 1
-  _meleeRange: 2
+  _meleeRange: 3
   _meleeDamage: 10
   _delayBetweenAttack: 0.35
   _canRangedAttack: 0

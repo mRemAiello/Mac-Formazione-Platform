@@ -6,12 +6,12 @@ using UnityEngine.Rendering.Universal;
 public class LightHandler : Singleton<LightHandler>
 {
     [SerializeField] private Light2D _light;
-    [SerializeField] private float _duration;
 
     //
     private Color _currentColor;
     private Color _startColor;
     private Color _endColor;
+    private float _duration;
     private bool _isEffectOn = false;
 
     void Update()
@@ -26,10 +26,11 @@ public class LightHandler : Singleton<LightHandler>
         }
     }
 
-    public void StartEffect(Color endColor)
+    public void StartEffect(Color endColor, float duration)
     {
         _startColor = _light.color;
         _endColor = endColor;
-        _isEffectOn = true;   
+        _duration = duration;
+        _isEffectOn = true;
     }
 }

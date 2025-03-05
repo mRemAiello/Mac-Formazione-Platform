@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec01c76d605e71844aecdd65c7f1b912, type: 3}
   m_Name: Wall 2
   m_EditorClassIdentifier: 
-  Health: 100
+  NormalStructure: {fileID: 0}
+  Health: 20
   Defence: 15
   Attack: 0
   AttackRange: 0
-  MoneyToUpgrade: 500
+  DestroyedParticle: {fileID: 0}
+  DamagedSprite: {fileID: 0}
+  ManaToRepair: 5
+  ManaToUpgrade: 10
   Upgrade: {fileID: 8688646257339612402, guid: 96277beb794136e469e2c81435805d46, type: 3}

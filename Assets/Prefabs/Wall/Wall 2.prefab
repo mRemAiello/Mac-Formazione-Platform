@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 416920928908505349}
   - component: {fileID: 304267217832222414}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Square (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,8 +73,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1341578065
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.3584906, g: 0.28542987, b: 0.23741545, a: 1}
@@ -97,7 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1455553830210446120}
   - component: {fileID: 2346322825833126904}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Square (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,8 +160,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1341578065
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.3584906, g: 0.28542987, b: 0.23741545, a: 1}
@@ -184,7 +184,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4365472737907177185}
   - component: {fileID: 222268203290344275}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Square (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -247,8 +247,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1341578065
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.3584906, g: 0.28542987, b: 0.23741545, a: 1}
@@ -271,7 +271,7 @@ GameObject:
   m_Component:
   - component: {fileID: 395163758110340709}
   - component: {fileID: 5155111670476753405}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -334,8 +334,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1341578065
+  m_SortingLayer: -1
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.35686275, g: 0.28627452, b: 0.23921569, a: 1}
@@ -358,7 +358,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3226642957039843686}
   - component: {fileID: 5507927722313038579}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Square (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -421,8 +421,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1341578065
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.3584906, g: 0.28542987, b: 0.23741545, a: 1}
@@ -446,9 +446,9 @@ GameObject:
   - component: {fileID: 7364080495507961741}
   - component: {fileID: 9128270207829414908}
   - component: {fileID: 5045354702750880553}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Wall 2
-  m_TagString: Untagged
+  m_TagString: Structure
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -486,8 +486,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec9d4d37d8f22bd4c8c508eb081211b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpgradeUI: {fileID: 1913782438054416175}
+  CurrentHealth: 0
   Data: {fileID: 11400000, guid: 092067425bb638d40bdab593e1800133, type: 2}
+  SpriteRenderer: {fileID: 0}
+  StructureCollider: {fileID: 5045354702750880553}
+  UpgradeUI: {fileID: 1913782438054416175}
 --- !u!61 &5045354702750880553
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -629,24 +632,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4854614826256683375, guid: 0c6ce4cfb6c0eb946ae3a09531013e87, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6669832159464265468}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c6ce4cfb6c0eb946ae3a09531013e87, type: 3}
 --- !u!1 &1913782438054416175 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4854614826256683375, guid: 0c6ce4cfb6c0eb946ae3a09531013e87, type: 3}
   m_PrefabInstance: {fileID: 6471690851264405056}
   m_PrefabAsset: {fileID: 0}
---- !u!33 &6669832159464265468
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1913782438054416175}
-  m_Mesh: {fileID: 0}
 --- !u!224 &7600390406762168288 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3506635343138578848, guid: 0c6ce4cfb6c0eb946ae3a09531013e87, type: 3}

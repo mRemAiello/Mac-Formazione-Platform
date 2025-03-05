@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - Structure
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - Player
   - Enemy
   - Hidden
-  - 
+  - Structure
   - 
   - 
   - 
@@ -42,8 +43,14 @@ TagManager:
   - name: Background
     uniqueID: 2706474827
     locked: 0
+  - name: Structure
+    uniqueID: 1341578065
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 4089550597
     locked: 0
   - name: UI
     uniqueID: 3398745281

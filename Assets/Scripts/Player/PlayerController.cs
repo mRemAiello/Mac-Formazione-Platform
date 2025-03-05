@@ -1,15 +1,15 @@
 using System;
 using GamePix;
 using GameUtils;
-using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PlayerController : Singleton<PlayerController>, IDamageable
 {
     [Header("Data")]
     [SerializeField] private PlayerMovementData _playerData;
+    [SerializeField] private ItemData _manaData;
     [SerializeField] private VoidEventAsset _onPlayerDamaged;
 
     [Header("Components")]
@@ -29,6 +29,9 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     [Header("Dead Animation")]
     [SerializeField] private float _deadAnimationTime;
     [SerializeField] private float _fadeAnimationTime;
+
+    //
+    private PlayerInputActions inputActions; // Riferimento alle Input Actions
 
     //
     private float _currentHP;
@@ -57,37 +60,37 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     private float _coyoteTimeCounter = 0;
     private float _jumpBufferCounter = 0;
     private bool _jumpButtonPressed = false;
+    private bool _jumpButtonUp = true;
     private GameObject _triggerMeleeAttackGameObject;
+    private Structure _currentStructure;
+
+    protected override void OnPostAwake()
+    {
+        inputActions = new PlayerInputActions();
+    }
 
     //
     void Start()
     {
         _standardGravityScale = _rb.gravityScale;
-
-        //
         _currentHP = maxHP;
     }
 
-    void Update()
+    private void OnEnable()
     {
-        if (IsDead)
-            return;
+        inputActions.Enable(); // Abilita le Input Actions
 
-        //
-        if (seconds > 0)
-        {
-            TakeDamage(damagePerSecond * Time.deltaTime);
-            seconds -= Time.deltaTime;
-        }
+        inputActions.Player.Move.performed += OnMovePressed; // Assegna il metodo OnMove all'azione Move
+        inputActions.Player.Move.canceled += OnMoveReleased; // Assegna il metodo OnMoveCanceled all'azione Move
+        inputActions.Player.Jump.performed += OnJumpPressed; // Assegna il metodo OnJump all'azione Jump
+        inputActions.Player.Jump.canceled += OnJumpReleased; // Assegna il metodo OnJump all'azione Jump
+        inputActions.Player.Attack.performed += OnAttack; // Assegna il metodo OnAttack all'azione Attack
+        inputActions.Player.Upgrade.performed += OnUpgradePressed;
+    }
 
-        // Input orizzontale per il movimento (GetAxisRaw prende SOLO 0, 1, -1)
-        // GetAxis prende anche valori intermedi (es. 0.01, -0.01)
-        float moveInputHorizontalDesktop = Input.GetAxisRaw("Horizontal");
-        float moveInputVerticalDesktop = Input.GetAxisRaw("Vertical");
-        float moveInputHorizontalMobile = 0;
-        float moveInputVerticalMobile = 0;
-
-
+    private void OnDisable()
+    {
+        inputActions.Disable(); // Disabilita le Input Actions
     }
 
     private void LateUpdate()
@@ -97,10 +100,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
             return;
 
         //
-        CheckJumpInput();
-
-        // Controlla le condizioni di salto
-        CheckJump();
+        CheckMove();
 
         // Gravità
         ApplyCustomGravity();
@@ -111,44 +111,91 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         // Ricontrolla le condizioni di salto
         ResetJump();
 
-        //
-        CheckDownButtonPressed();
-
         // Funzione che aggiorna l'animator
         UpdateAnimator();
+
+        //
+        CheckStructureNearby();
     }
 
-    private void Flip()
+    // Metodo per gestire il movimento
+    private void OnMovePressed(InputAction.CallbackContext context)
     {
-        if (_playerOrientation == CharacterOrientation.Left)
+        // Legge l'input orizzontale
+        Vector2 moveInput = context.ReadValue<Vector2>();
+        _moveInputHorizontal = moveInput.x;
+        _moveInputVertical = moveInput.y;
+    }
+
+    private void OnMoveReleased(InputAction.CallbackContext context)
+    {
+        _moveInputHorizontal = 0;
+        _moveInputVertical = 0;
+        _rb.linearVelocity = new Vector2(0, 0);
+    }
+
+    // Metodo per gestire il salto
+    private void OnJumpPressed(InputAction.CallbackContext context)
+    {
+        _jumpButtonUp = false;
+        _jumpButtonPressed = true;
+        Jump();
+    }
+
+    private void OnJumpReleased(InputAction.CallbackContext context)
+    {
+        _jumpButtonUp = true;
+        _jumpButtonPressed = false;
+    }
+
+    private void OnUpgradePressed(InputAction.CallbackContext context)
+    {
+        //
+        if (!PlayerInventory.InstanceExists)
+            return;
+
+        //
+        if (_currentStructure == null)
+            return;
+
+        // TODO: Verifica di avere i soldi (condizioni per l'upgrade)
+        ItemWithAmount itemAmount = PlayerInventory.Instance.Find(_manaData);
+        if (itemAmount == null)
+            return;
+
+        //
+        if (_currentStructure.IsFirstStructure)
         {
-            transform.localScale = new Vector3(-1, 1, 1);
+            if (itemAmount.Amount >= _currentStructure.Data.ManaToUpgrade)
+            {
+                _currentStructure.Upgrade();
+                PlayerInventory.Instance.RemoveFromInventory(_manaData, _currentStructure.Data.ManaToUpgrade);
+            }
+            return;
+        }
+        
+        //
+        if (_currentStructure.IsAlive)
+        {
+            if (itemAmount.Amount >= _currentStructure.Data.ManaToUpgrade)
+            {
+                _currentStructure.Upgrade();
+                PlayerInventory.Instance.RemoveFromInventory(_manaData, _currentStructure.Data.ManaToUpgrade);
+            }
         }
         else
         {
-            transform.localScale = new Vector3(1, 1, 1);
+            if (itemAmount.Amount >= _currentStructure.Data.ManaToRepair)
+            {
+                _currentStructure.Repair();
+                PlayerInventory.Instance.RemoveFromInventory(_manaData, _currentStructure.Data.ManaToRepair);
+            }
         }
     }
 
-    public bool IsGrounded()
+    private void CheckMove()
     {
-        // Controllo se il personaggio è a terra in base alla collisione e alla velocità verticale
-        bool groundedByCollision = Physics2D.OverlapCircle(_groundCheck.position, _playerData.GroundCheckRadius, _playerData.GroundLayer);
-
         //
-        // Debug.Log(groundedByCollision + " - " + Mathf.Abs(_rb.velocity.y));
-
-        // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
-        if (groundedByCollision && Mathf.Abs(_rb.linearVelocity.y) <= _playerData.VelocityThreshold)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void Move()
-    {
         if (_playerState == PlayerStates.Attack)
         {
             _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
@@ -169,59 +216,43 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         }
     }
 
-    public void Attack()
+    private void CheckStructureNearby()
     {
-        if (_playerState == PlayerStates.Attack)
-            return;
-
-        // Attiva animator mio, attiva animator slash
-        _triggerMeleeAttackGameObject = Instantiate(_attackCollider, _attackColliderPosition.position, Quaternion.identity);
-        if (_playerOrientation == CharacterOrientation.Left)
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, _playerData.InteractionRange);
+        bool foundStructure = false;
+        foreach (var collider in colliders)
         {
-            _triggerMeleeAttackGameObject.transform.localScale = new Vector3(-1, 1, 1);
+            if (collider.TryGetComponent<Structure>(out var structure))
+            {
+                _currentStructure = structure;
+                if (_currentStructure.IsFirstStructure)
+                {
+                    _currentStructure.ShowUpgrade();
+                }
+                else if (_currentStructure.IsDead)
+                {
+                    _currentStructure.ShowRepair();
+                }
+                else
+                {
+                    _currentStructure.ShowUpgrade();
+                }
+                foundStructure = true;
+            }
         }
 
-        // 
-        TriggerMeleeAttack triggerMeleeAttack = _triggerMeleeAttackGameObject.GetComponent<TriggerMeleeAttack>();
-
-        // TODO: Applicare i modificatori del danno
-        triggerMeleeAttack?.Init(this, _playerData.AttackDamage);
-
         //
-        GameObject audioSource = Instantiate(_audioSourcePrefab, _attackColliderPosition.position, Quaternion.identity);
-        audioSource.GetComponent<AudioSource>().clip = _attackClip;
-        audioSource.GetComponent<AudioSource>().Play();
-
-        //
-        ChangeState(PlayerStates.Attack);
-
-        //
-        Invoke(nameof(ResetAttackState), _playerData.AttackDelay);
-    }
-
-    private void ResetAttackState()
-    {
-        ChangeState(PlayerStates.Idle);
-
-        //
-        Destroy(_triggerMeleeAttackGameObject);
-    }
-
-    private void CheckJumpInput()
-    {
-        _jumpButtonPressed = false;
-        if (Input.GetButtonDown("Jump"))
+        if (!foundStructure)
         {
-            _jumpButtonPressed = true;
+            if (_currentStructure != null)
+            {
+                _currentStructure.HideUpgrade();
+                _currentStructure = null;
+            }
         }
     }
 
-    public void JumpButtonPressed()
-    {
-        _jumpButtonPressed = true;
-    }
-
-    private void CheckJump()
+    private void Jump()
     {
         // 
         if (_moveInputVertical < 0)
@@ -277,7 +308,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         }
 
         // Coyote Time
-        if (Input.GetButtonUp("Jump") && _rb.linearVelocity.y > 0f && _jumpCount <= 1)
+        if (_jumpButtonUp && _rb.linearVelocity.y > 0f && _jumpCount <= 1)
         {
             //Debug.Log("Coyote Time" + _jumpCount);
             _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _rb.linearVelocity.y * 0.5f);
@@ -289,6 +320,44 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         {
             _jumpTime += Time.deltaTime;
         }
+    }
+
+    private void OnAttack(InputAction.CallbackContext context)
+    {
+        if (_playerState == PlayerStates.Attack)
+            return;
+
+        // Attiva animator mio, attiva animator slash
+        _triggerMeleeAttackGameObject = Instantiate(_attackCollider, _attackColliderPosition.position, Quaternion.identity);
+        if (_playerOrientation == CharacterOrientation.Left)
+        {
+            _triggerMeleeAttackGameObject.transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        // 
+        TriggerMeleeAttack triggerMeleeAttack = _triggerMeleeAttackGameObject.GetComponent<TriggerMeleeAttack>();
+
+        // TODO: Applicare i modificatori del danno
+        triggerMeleeAttack?.Init(this, _playerData.AttackDamage);
+
+        //
+        GameObject audioSource = Instantiate(_audioSourcePrefab, _attackColliderPosition.position, Quaternion.identity);
+        audioSource.GetComponent<AudioSource>().clip = _attackClip;
+        audioSource.GetComponent<AudioSource>().Play();
+
+        //
+        ChangeState(PlayerStates.Attack);
+
+        //
+        Invoke(nameof(ResetAttackState), _playerData.AttackDelay);
+    }
+
+    private void ResetAttackState()
+    {
+        ChangeState(PlayerStates.Idle);
+
+        //
+        Destroy(_triggerMeleeAttackGameObject);
     }
 
     private void ResetJump()
@@ -309,39 +378,14 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
     private void ApplyCustomGravity()
     {
         // Aumento la gravità dopo un tot secondi di salto
-        if (_playerState == PlayerStates.Jump && _jumpTime >= _playerData.JumpDelay)
+        /*if (_playerState == PlayerStates.Jump && _jumpTime >= _playerData.JumpDelay)
         {
             _rb.gravityScale *= _playerData.GravityScale;
         }
         else
         {
             _rb.gravityScale = _standardGravityScale;
-        }
-    }
-
-    // Controllo se ho premuto il tasto Giù + barra spaziatrice
-    private void CheckDownButtonPressed()
-    {
-        if (IsGrounded() && Input.GetButtonDown("Jump") && _moveInputVertical < 0)
-        {
-            Vector2 pos = transform.position;
-            var distance = _playerData.PlatformDistanceToCheck;
-            var layerMask = _playerData.PlatformDistanceLayerMask;
-            RaycastHit2D[] hits = Physics2D.RaycastAll(pos, Vector2.down, distance, layerMask);
-            if (hits != null && hits.Length > 0)
-            {
-                Debug.Log($"Trovati {hits.Length} elementi.");
-                foreach (var hit in hits)
-                {
-                    GameObject obj = hit.transform.gameObject;
-                    DisableCollider disableScript = obj.GetComponent<DisableCollider>();
-                    if (disableScript != null)
-                    {
-                        disableScript.DisablePlatformCollider();
-                    }
-                }
-            }
-        }
+        }*/
     }
 
     private void UpdateAnimator()
@@ -468,6 +512,45 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
             Gizmos.color = Color.yellow;
             Vector2 to = (Vector2)transform.position + (Vector2.down * _playerData.PlatformDistanceToCheck);
             Gizmos.DrawLine(transform.position, to);
+            Gizmos.color = Color.white;
+        }
+    }
+
+    private void Flip()
+    {
+        if (_playerOrientation == CharacterOrientation.Left)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+    }
+
+    public bool IsGrounded()
+    {
+        // Controllo se il personaggio è a terra in base alla collisione e alla velocità verticale
+        bool groundedByCollision = Physics2D.OverlapCircle(_groundCheck.position, _playerData.GroundCheckRadius, _playerData.GroundLayer);
+
+        //
+        // Debug.Log(groundedByCollision + " - " + Mathf.Abs(_rb.velocity.y));
+
+        // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
+        if (groundedByCollision && Mathf.Abs(_rb.linearVelocity.y) <= _playerData.VelocityThreshold)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (_groundCheck != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(_groundCheck.position, _playerData.GroundCheckRadius);
             Gizmos.color = Color.white;
         }
     }

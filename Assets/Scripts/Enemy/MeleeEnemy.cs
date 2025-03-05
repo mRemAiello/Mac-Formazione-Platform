@@ -20,6 +20,10 @@ public class MeleeEnemy : Enemy
     public override void MeleeAttack()
     {
         //
+        if (CurrentTarget == null)
+            return;
+
+        //
         if (!EnemyInSight)
             return;
 
@@ -32,7 +36,6 @@ public class MeleeEnemy : Enemy
             return;
 
         // TODO: Controlla la y, 
-        DistanceToEnemy = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
         if (DistanceToEnemy <= InternalEnemyData.MeleeRange)
         {
             InternalRigidbody.linearVelocity = Vector2.zero;

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 {
     [SerializeField] protected EnemyData _enemyData;
+    [SerializeField] private LayerMask _enemyLayer;
     [SerializeField] private Rigidbody2D _rb;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Collider2D _enemyCollider;
@@ -34,9 +35,9 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
     //
     private CharacterOrientation _enemyOrientation = CharacterOrientation.Right;
     private Transform _currentPoint;
+    private GameObject _currentTarget;
     private bool _wasPrevInSight = false;
     private bool _enemyInSight = false;
-    private bool _enemyInMeleeRange = false;
     private bool _knocked = false;
     private bool _isDeath = false;
     private bool _forceDisable = false;
@@ -50,10 +51,11 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
     public float KnockBackForce => _enemyData.KnockBackForce;
     public float KnockBackTime => _enemyData.KnockBackTime;
     public float StunTime => _enemyData.StunTime;
-    protected bool IsAttacking { get; set; }
-    protected bool IsRangedAttacking { get; set; }
-    protected bool EnemyInSight => _enemyInSight;
-    protected float DistanceToEnemy { get; set; }
+    public GameObject CurrentTarget => _currentTarget;
+    public bool IsAttacking { get; set; }
+    public bool IsRangedAttacking { get; set; }
+    public bool EnemyInSight => _enemyInSight;
+    public float DistanceToEnemy { get; set; }
 
     //
     void Start()
@@ -202,17 +204,56 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         }
     }
 
+    private GameObject FindClosestEnemyInLayer()
+    {
+        // Trova tutti i collider entro un raggio attorno al giocatore    
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _enemyData.AggroRange, _enemyLayer);
+
+        // Itera su tutti i collider trovati
+        GameObject closestEnemy = null;
+        float closestDistance = Mathf.Infinity;
+        foreach (Collider2D hit in hits)
+        {
+            //
+            IDamageable damageable = hit.GetComponent<IDamageable>();
+            damageable ??= hit.GetComponentInChildren<IDamageable>();
+
+            //
+            if (damageable == null || damageable.IsDead)
+                continue;
+
+            //
+            float distance = Vector3.Distance(transform.position, hit.transform.position);
+
+            // Se l'oggetto è più vicino del nemico più vicino trovato finora, aggiorna
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestEnemy = hit.gameObject;
+            }
+        }
+
+        return closestEnemy;
+    }
+
     protected virtual void CheckEnemyInSight()
     {
-        if (!PlayerController.InstanceExists)
-            return;
-
         //
         _wasPrevInSight = _enemyInSight;
-        DistanceToEnemy = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
+
+        // TODO: Prendere la distanza tra un qualche nemico
+        GameObject closestEnemy = FindClosestEnemyInLayer();
+        if (closestEnemy == null)
+        {
+            _enemyInSight = false;
+            _wasPrevInSight = false;
+            return;
+        }
+
+        DistanceToEnemy = Vector2.Distance(transform.position, closestEnemy.transform.position);
 
         // Controllo le Y
-        float enemyY = PlayerController.Instance.transform.position.y;
+        float enemyY = closestEnemy.transform.position.y;
         float minY = Mathf.Min(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY);
         float maxY = Mathf.Max(transform.position.y - _enemyData.SightThresholdY, transform.position.y + _enemyData.SightThresholdY);
 
@@ -220,10 +261,12 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
         if (DistanceToEnemy < _enemyData.SightRadius && enemyY >= minY && enemyY <= maxY)
         {
             _enemyInSight = true;
+            _currentTarget = closestEnemy;
         }
         else
         {
             _enemyInSight = false;
+            _currentTarget = null;
         }
 
         //
@@ -371,7 +414,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IKnockable
 
         // Disattivo collider e rigidbody
         _rb.linearVelocity = Vector3.zero;
-        _rb.isKinematic = true;
+        _rb.bodyType = RigidbodyType2D.Kinematic;
         _enemyCollider.enabled = false;
 
         //

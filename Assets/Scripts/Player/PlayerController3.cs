@@ -36,10 +36,10 @@ public class PlayerController3 : Singleton<PlayerController3>
     private void OnUpgradePressed(InputAction.CallbackContext context)
     {
         // TODO: Verifica di avere i soldi (condizioni per l'upgrade)
-        if (currentStructure != null && money >= currentStructure.Data.MoneyToUpgrade)
+        if (currentStructure != null && money >= currentStructure.Data.ManaToUpgrade)
         {
             currentStructure.Upgrade();
-            money -= currentStructure.Data.MoneyToUpgrade;
+            money -= currentStructure.Data.ManaToUpgrade;
         }
     }
 
