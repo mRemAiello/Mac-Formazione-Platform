@@ -31,7 +31,7 @@ public class GroundChecker : MonoBehaviour
         bool groundedByCollision = Physics2D.OverlapCircle(_groundCheck.position, _groundCheckRadius, groundLayer);
 
         // Se è in contatto con il terreno e la velocità verticale è sufficientemente bassa, consideralo a terra
-        if (groundedByCollision && Mathf.Abs(rb.velocity.y) <= _velocityThreshold)
+        if (groundedByCollision && Mathf.Abs(rb.linearVelocity.y) <= _velocityThreshold)
         {
             _isGrounded = true;
         }

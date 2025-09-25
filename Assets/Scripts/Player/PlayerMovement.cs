@@ -73,7 +73,7 @@ public class PlayerMovement : GroundChecker
     private void Move()
     {
         // Movimento del rigidbody impostando la velocità
-        rb.velocity = new Vector2(_moveInput * _playerMovementData.MoveSpeed * _slowSpeed, rb.velocity.y);
+        rb.linearVelocity = new Vector2(_moveInput * _playerMovementData.MoveSpeed * _slowSpeed, rb.linearVelocity.y);
     }
 
     private void CheckJump()
@@ -84,7 +84,7 @@ public class PlayerMovement : GroundChecker
             if (IsGrounded)
             {
                 _isJumping = true;
-                rb.velocity = new Vector2(rb.velocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, _playerMovementData.JumpForce * _slowJumpSpeed);
 
                 // Incrementa il numero di salti
                 _jumpCount++;
@@ -95,7 +95,7 @@ public class PlayerMovement : GroundChecker
             else if (!IsGrounded && _jumpCount < _playerMovementData.MaxJumps)
             {
                 _isJumping = true;
-                rb.velocity = new Vector2(rb.velocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, _playerMovementData.DoubleJumpForce * _slowJumpSpeed);
 
                 // Incrementa il numero di salti
                 _jumpCount++;
@@ -141,16 +141,16 @@ public class PlayerMovement : GroundChecker
     private void UpdateAnimator()
     {
         //
-        _animator.SetFloat("XVelocity", Math.Abs(rb.velocity.x));
+        _animator.SetFloat("XVelocity", Math.Abs(rb.linearVelocity.x));
         _animator.SetBool("IsJumping", _isJumping);
         _animator.SetBool("IsSlowed", _isSlowed);
     }
 
     private void ClampVelocity2D()
     {
-        float clampedX = Mathf.Clamp(rb.velocity.x, _playerMovementData.MinXVelocity, _playerMovementData.MaxXVelocity);
-        float clampedY = Mathf.Clamp(rb.velocity.y, _playerMovementData.MinYVelocity, _playerMovementData.MaxYVelocity);
-        rb.velocity = new Vector2(clampedX, clampedY);
+        float clampedX = Mathf.Clamp(rb.linearVelocity.x, _playerMovementData.MinXVelocity, _playerMovementData.MaxXVelocity);
+        float clampedY = Mathf.Clamp(rb.linearVelocity.y, _playerMovementData.MinYVelocity, _playerMovementData.MaxYVelocity);
+        rb.linearVelocity = new Vector2(clampedX, clampedY);
     }
 
     public void Slow(float slowSpeed, float slowJumpSpeed)
