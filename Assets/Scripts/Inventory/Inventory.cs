@@ -71,6 +71,12 @@ public class Inventory : MonoBehaviour
 
     public void RemoveFromInventory(ItemData item, int amount)
     {
+        if (amount <= 0)
+        {
+            Debug.LogError("Amount must be greater than 0.");
+            return;
+        }
+
         ItemWithAmount itemWithAmount = Find(item);
         if (itemWithAmount != null)
         {

@@ -403,6 +403,7 @@ public class PlayerController : Singleton<PlayerController>, IDamageable
         _rb.linearVelocity = new Vector2(clampedX, clampedY);
     }
 
+    // player.Slow(0.5f, 0.5f);
     public void Slow(float slowSpeed, float slowJumpSpeed)
     {
         _slowSpeed = slowSpeed;
